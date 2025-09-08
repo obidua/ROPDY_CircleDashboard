@@ -23,13 +23,13 @@ const Sidebar = ({ isMobileMenuOpen, setIsMobileMenuOpen }) => {
     if (isConnected) {
       setIsActive(true);
     }
-  }, [address, isConnected])
+  }, [address, isConnected]);
 
   useEffect(() => {
     if (userAddress) {
       setWalletAddress(userAddress);
     }
-  }, [userAddress])
+  }, [userAddress]);
 
 
   // useEffect(() => {
@@ -54,7 +54,7 @@ const Sidebar = ({ isMobileMenuOpen, setIsMobileMenuOpen }) => {
   // }, [walletPrompted, isConnected, address])
 
 
-  const isUserExist = useStore((state) => state.isUserExist)
+  const isUserExist = useStore((state) => state.isUserExist);
 
   useEffect(() => {
     const checkUserAfterConnect = async () => {
@@ -65,7 +65,7 @@ const Sidebar = ({ isMobileMenuOpen, setIsMobileMenuOpen }) => {
 
           if (isExist) {
 
-            console.log("isExist", isExist)
+            console.log("isExist", isExist);
             const userData = {
               address: address,
               data: {}
@@ -84,7 +84,7 @@ const Sidebar = ({ isMobileMenuOpen, setIsMobileMenuOpen }) => {
       }
     };
     checkUserAfterConnect();
-  }, [walletPrompted, isConnected, address])
+  }, [walletPrompted, isConnected, address]);
 
   const handleConnect = async () => {
     try {
@@ -116,7 +116,7 @@ const Sidebar = ({ isMobileMenuOpen, setIsMobileMenuOpen }) => {
     localStorage.removeItem("UserData");
 
     setUserDisconnected(true);
-  }
+  };
 
   const menuSections = [
     {
@@ -200,6 +200,7 @@ const Sidebar = ({ isMobileMenuOpen, setIsMobileMenuOpen }) => {
   // }, [isConnected])
 
   return (
+    <>
     <aside className={`w-64 h-screen bg-white/50 dark:bg-gray-900/50 backdrop-blur-sm text-gray-900 dark:text-gray-100 shadow-lg fixed border-r border-admin-gold-900/50 transition-transform duration-300 z-50 flex flex-col ${isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
         }`}>
       <div className="p-4 border-b border-admin-gold-900/50 bg-white/50 dark:bg-black/50 backdrop-blur-sm flex-shrink-0">
@@ -298,19 +299,6 @@ const Sidebar = ({ isMobileMenuOpen, setIsMobileMenuOpen }) => {
         </div>
       </div>
     </aside>
-  );
-};
-
-export default Sidebar;
-          </div>
-          
-          {/* Version Info */}
-          <div className="text-center text-sm text-admin-cyan dark:text-admin-cyan-dark">
-          <p>Powered by RAMA</p>
-          <p>v1.0 Beta</p>
-          </div>
-        </div>
-      </aside>
 
       {isMobileMenuOpen && (
         <div
