@@ -2,6 +2,7 @@ import React from 'react';
 import { Routes, Route } from 'react-router-dom';
 import Dashboard from '../pages/Dashboard';
 import MintDashboard from '../pages/MintDashboard';
+import Portfolios from '../pages/Portfolios';
 import Register from '../pages/Register';
 import Home from '../pages/Home';
 import Referral from '../pages/Referral';
@@ -36,7 +37,7 @@ function AppRoutes() {
 
       {/* My Mint routes */}
       <Route path="/mint/activate-servers" element={<MintDashboard />} />
-      <Route path="/mint/portfolios" element={<PlaceholderPage title="💼 Portfolios (All Slots)" description="View and manage all your active portfolios across different servers." />} />
+      <Route path="/mint/portfolios" element={<Portfolios />} />
       <Route path="/mint/claims-history" element={<PlaceholderPage title="📋 Claims & History" description="Track your ROI claims and view detailed transaction history." />} />
       <Route path="/mint/top-up" element={<PlaceholderPage title="⬆️ Top-up" description="Top-up your portfolios when you reach the 3x cap limit." />} />
 
