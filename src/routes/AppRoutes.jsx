@@ -17,12 +17,14 @@ import Cp1 from '../pages/Cp1';
 import Cp2 from '../pages/Cp2';
 import MyDirect from '../pages/MyDirect';
 import Referral from '../pages/Referral'
+import MintDashboard from '../pages/MintDashboard';
 
 function AppRoutes() {
   return (
     <Routes>
       <Route path="/" element={<Home />} />
       <Route path="/dashboard" element={<Dashboard />} />
+      <Route path="/mint-dashboard" element={<MintDashboard />} />
       <Route path="/circles" element={<Circles />} />
       <Route path="/purchase" element={<Purchase />} />
       <Route path="/settlements" element={<Settlements />} />

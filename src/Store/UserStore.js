@@ -27,6 +27,7 @@ const Contract = {
   ROPDY_VIEW: "0x6D126941B21cC0e32b8b128851a3Ef9A72587fC1",
   ROPDY_ROOT: "0x478F02521e5A86D4bFEbaF0730446E2B45b3e95d",
   ROPDY_PRICECONV: "0xA7ECB3E3f34108C4f8F729Af3e317Ba9a4B3fF6C",
+  ROPDY_MINT: "YOUR_ROPDY_MINT_CONTRACT_ADDRESS_HERE", // Replace with actual contract address
 };
 
 const fetchContractAbi = async (contractName) => {
@@ -1186,6 +1187,130 @@ export const useStore = create((set, get) => ({
         error?.message || error
       );
       return null;
+    }
+  },
+
+  // ========================================
+  // ROPDY Mint Contract Functions
+  // ========================================
+
+  getMintGlobalStats: async () => {
+    try {
+      const { abi, contractAddress } = await fetchContractAbi("ROPDY_MINT");
+      const contract = new web3.eth.Contract(abi, contractAddress);
+
+      // Fetch global data
+      const [
+        poolRamaAccounting,
+        spotBps,
+        growthBps
+      ] = await Promise.all([
+        contract.methods.poolRamaAccounting().call(),
+        Promise.all(Array.from({ length: 10 }, (_, i) => contract.methods.spotBps(i).call())),
+        Promise.all(Array.from({ length: 10 }, (_, i) => contract.methods.growthBps(i).call()))
+      ]);
+
+      // Fetch server configurations (1-5)
+      const servers = await Promise.all(
+        Array.from({ length: 5 }, (_, i) => contract.methods.server(i + 1).call())
+      );
+
+      // Fetch tier configurations (0-7 for tiers 1-8)
+      const tiers = await Promise.all(
+        Array.from({ length: 8 }, (_, i) => contract.methods.tierCfg(i).call())
+      );
+
+      // Fetch tier states
+      const tierStates = await Promise.all(
+        Array.from({ length: 8 }, (_, i) => contract.methods.tierState(i).call())
+      );
+
+      return {
+        poolRamaAccounting,
+        spotBps,
+        growthBps,
+        servers,
+        tiers,
+        tierStates
+      };
+    } catch (error) {
+      console.error("Error fetching mint global stats:", error);
+      throw error;
+    }
+  },
+
+  getMintUserStats: async (userAddress) => {
+    try {
+      const { abi, contractAddress } = await fetchContractAbi("ROPDY_MINT");
+      const contract = new web3.eth.Contract(abi, contractAddress);
+
+      // Fetch basic user data
+      const [
+        highestServerActivated,
+        userCapRemainingUsd
+      ] = await Promise.all([
+        contract.methods.highestServerActivated(userAddress).call(),
+        contract.methods.userCapRemainingUsd(userAddress).call()
+      ]);
+
+      // Fetch slot counts for each server
+      const slotCounts = await Promise.all(
+        Array.from({ length: 5 }, (_, i) => contract.methods.slotCount(userAddress, i + 1).call())
+      );
+
+      // Fetch all active positions
+      const positions = [];
+      for (let serverId = 1; serverId <= 5; serverId++) {
+        const slots = parseInt(slotCounts[serverId - 1]);
+        for (let slotId = 1; slotId <= slots; slotId++) {
+          try {
+            const position = await contract.methods.positionInfo(userAddress, serverId, slotId).call();
+            if (position.active) {
+              positions.push({
+                serverId,
+                slotId,
+                ...position
+              });
+            }
+          } catch (err) {
+            console.warn(`Failed to fetch position ${serverId}-${slotId}:`, err);
+          }
+        }
+      }
+
+      // Fetch tier user data (0-7 for tiers 1-8)
+      const tierUsers = await Promise.all(
+        Array.from({ length: 8 }, (_, i) => contract.methods.tierUser(userAddress, i).call())
+      );
+
+      // Fetch additional user business metrics (these might need to be accessed differently based on contract structure)
+      let selfBusinessUsd = '0';
+      let directs = '0';
+      let teamSize = '0';
+      
+      try {
+        // These are internal mappings, so we might need alternative methods or events to get this data
+        // For now, we'll set them as placeholders
+        selfBusinessUsd = '0'; // This would need to be tracked via events or alternative methods
+        directs = '0';
+        teamSize = '0';
+      } catch (err) {
+        console.warn("Could not fetch business metrics:", err);
+      }
+
+      return {
+        highestServerActivated,
+        userCapRemainingUsd,
+        slotCounts,
+        positions,
+        tierUsers,
+        selfBusinessUsd,
+        directs,
+        teamSize
+      };
+    } catch (error) {
+      console.error("Error fetching mint user stats:", error);
+      throw error;
     }
   },
 
