@@ -1356,6 +1356,252 @@ export const useStore = create((set, get) => ({
     }
   },
 
+  // Activate Server Functions
+  getServerActivationData: async (userAddress) => {
+    try {
+      const [globalStats, userStats] = await Promise.all([
+        get().getMintGlobalStats(),
+        get().getMintUserStats(userAddress)
+      ]);
+
+      // Calculate available servers based on user's highest activated
+      const highestActivated = parseInt(userStats.highestServerActivated);
+      const availableServers = globalStats.servers.map((server, index) => ({
+        id: index + 1,
+        ...server,
+        isActivated: index + 1 <= highestActivated,
+        canActivate: index + 1 <= highestActivated + 1, // Can activate next server
+        userSlots: parseInt(userStats.slotCounts[index])
+      }));
+
+      return {
+        servers: availableServers,
+        userCapRemaining: userStats.userCapRemainingUsd,
+        highestActivated
+      };
+    } catch (error) {
+      console.error("Error fetching server activation data:", error);
+      throw error;
+    }
+  },
+
+  // Spot Commission Functions
+  getSpotCommissionData: async (userAddress) => {
+    try {
+      // Mock spot commission data
+      const mockCommissions = [];
+      const now = Date.now();
+      
+      // Generate mock commission data for last 30 days
+      for (let i = 0; i < 30; i++) {
+        const date = new Date(now - i * 24 * 60 * 60 * 1000);
+        const dailyCommission = Math.random() * 50; // Random commission 0-50 USD
+        
+        if (dailyCommission > 5) { // Only add if significant
+          mockCommissions.push({
+            id: `comm-${i}`,
+            date: date.toISOString().split('T')[0],
+            timestamp: Math.floor(date.getTime() / 1000),
+            fromUser: `User${Math.floor(Math.random() * 1000)}`,
+            level: Math.floor(Math.random() * 5) + 1,
+            commissionUsd: dailyCommission,
+            commissionRama: dailyCommission * 10,
+            percentage: [5, 3, 2, 1, 1][Math.floor(Math.random() * 5)],
+            txHash: `0x${Math.random().toString(16).substr(2, 64)}`
+          });
+        }
+      }
+
+      return mockCommissions.sort((a, b) => b.timestamp - a.timestamp);
+    } catch (error) {
+      console.error("Error fetching spot commission data:", error);
+      return [];
+    }
+  },
+
+  // Daily Growth Functions
+  getDailyGrowthData: async (userAddress) => {
+    try {
+      // Mock daily growth data
+      const mockGrowth = [];
+      const now = Date.now();
+      
+      // Generate mock growth data for last 30 days
+      for (let i = 0; i < 30; i++) {
+        const date = new Date(now - i * 24 * 60 * 60 * 1000);
+        const dailyGrowth = Math.random() * 25; // Random growth 0-25 USD
+        
+        if (dailyGrowth > 2) { // Only add if significant
+          mockGrowth.push({
+            id: `growth-${i}`,
+            date: date.toISOString().split('T')[0],
+            timestamp: Math.floor(date.getTime() / 1000),
+            poolShare: dailyGrowth,
+            poolShareRama: dailyGrowth * 10,
+            totalPoolVolume: 10000 + Math.random() * 5000,
+            userShare: (Math.random() * 0.5).toFixed(4),
+            txHash: `0x${Math.random().toString(16).substr(2, 64)}`
+          });
+        }
+      }
+
+      return mockGrowth.sort((a, b) => b.timestamp - a.timestamp);
+    } catch (error) {
+      console.error("Error fetching daily growth data:", error);
+      return [];
+    }
+  },
+
+  // Leadership Functions
+  getLeadershipData: async (userAddress) => {
+    try {
+      const [globalStats, userStats] = await Promise.all([
+        get().getMintGlobalStats(),
+        get().getMintUserStats(userAddress)
+      ]);
+
+      // Calculate user's current tier
+      let currentTier = 0;
+      for (let i = 0; i < userStats.tierUsers.length; i++) {
+        if (userStats.tierUsers[i].active) {
+          currentTier = i + 1;
+        }
+      }
+
+      // Calculate progress to next tier
+      const nextTier = currentTier < 8 ? currentTier : 8;
+      const nextTierConfig = globalStats.tiers[nextTier - 1];
+      
+      const progress = {
+        currentTier,
+        nextTier: currentTier < 8 ? currentTier + 1 : 8,
+        selfBusiness: parseFloat(userStats.selfBusinessUsd) / 1e6,
+        requiredSelfBusiness: parseFloat(nextTierConfig?.selfBiz || 0) / 1e6,
+        directs: parseInt(userStats.directs),
+        requiredDirects: parseInt(nextTierConfig?.directs || 0),
+        teamSize: parseInt(userStats.teamSize),
+        requiredTeamSize: parseInt(nextTierConfig?.teamSize || 0)
+      };
+
+      return {
+        progress,
+        tiers: globalStats.tiers,
+        tierStates: globalStats.tierStates,
+        userTiers: userStats.tierUsers
+      };
+    } catch (error) {
+      console.error("Error fetching leadership data:", error);
+      throw error;
+    }
+  },
+
+  // GTO Rewards Functions
+  getGTORewardsData: async (userAddress) => {
+    try {
+      // Mock GTO rewards data
+      const mockRewards = [];
+      const now = Date.now();
+      
+      // Generate mock GTO rewards for last 12 months
+      for (let i = 0; i < 12; i++) {
+        const date = new Date(now - i * 30 * 24 * 60 * 60 * 1000);
+        const monthlyReward = Math.random() * 500; // Random reward 0-500 USD
+        
+        if (monthlyReward > 50) { // Only add if significant
+          mockRewards.push({
+            id: `gto-${i}`,
+            month: date.toISOString().slice(0, 7), // YYYY-MM format
+            timestamp: Math.floor(date.getTime() / 1000),
+            tier: Math.floor(Math.random() * 8) + 1,
+            rewardUsd: monthlyReward,
+            rewardRama: monthlyReward * 10,
+            globalTurnover: 50000 + Math.random() * 100000,
+            sharePercentage: (Math.random() * 2).toFixed(4),
+            status: Math.random() > 0.3 ? 'Claimed' : 'Pending',
+            txHash: Math.random() > 0.3 ? `0x${Math.random().toString(16).substr(2, 64)}` : null
+          });
+        }
+      }
+
+      return mockRewards.sort((a, b) => b.timestamp - a.timestamp);
+    } catch (error) {
+      console.error("Error fetching GTO rewards data:", error);
+      return [];
+    }
+  },
+
+  // Team Business Functions
+  getTeamBusinessData: async (userAddress) => {
+    try {
+      // Mock team business data
+      const mockTeamData = [];
+      
+      // Generate mock team members
+      for (let i = 1; i <= 20; i++) {
+        mockTeamData.push({
+          id: `member-${i}`,
+          userId: 1000 + i,
+          wallet: `0x${Math.random().toString(16).substr(2, 40)}`,
+          level: Math.floor(Math.random() * 10) + 1,
+          directSponsor: i <= 5 ? userAddress : `0x${Math.random().toString(16).substr(2, 40)}`,
+          joinDate: new Date(Date.now() - Math.random() * 365 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+          totalBusiness: Math.random() * 10000,
+          monthlyBusiness: Math.random() * 1000,
+          activePositions: Math.floor(Math.random() * 5) + 1,
+          highestServer: Math.floor(Math.random() * 5) + 1,
+          status: Math.random() > 0.2 ? 'Active' : 'Inactive'
+        });
+      }
+
+      return mockTeamData;
+    } catch (error) {
+      console.error("Error fetching team business data:", error);
+      return [];
+    }
+  },
+
+  // Earnings Report Functions
+  getEarningsReportData: async (userAddress) => {
+    try {
+      const [userStats, spotCommissions, dailyGrowth, gtoRewards] = await Promise.all([
+        get().getMintUserStats(userAddress),
+        get().getSpotCommissionData(userAddress),
+        get().getDailyGrowthData(userAddress),
+        get().getGTORewardsData(userAddress)
+      ]);
+
+      // Calculate totals
+      const totalSpotCommission = spotCommissions.reduce((sum, comm) => sum + comm.commissionUsd, 0);
+      const totalDailyGrowth = dailyGrowth.reduce((sum, growth) => sum + growth.poolShare, 0);
+      const totalGTORewards = gtoRewards.reduce((sum, reward) => sum + reward.rewardUsd, 0);
+      
+      // Calculate ROI from positions
+      const totalROI = userStats.positions?.reduce((sum, position) => {
+        const dailyRoi = (parseFloat(position.principalUsd) / 1e6) * (position.dailyRoiBp / 10000);
+        return sum + (dailyRoi * parseInt(position.claimedDays));
+      }, 0) || 0;
+
+      return {
+        summary: {
+          totalROI,
+          totalSpotCommission,
+          totalDailyGrowth,
+          totalGTORewards,
+          grandTotal: totalROI + totalSpotCommission + totalDailyGrowth + totalGTORewards
+        },
+        breakdown: {
+          roi: totalROI,
+          spotCommission: totalSpotCommission,
+          dailyGrowth: totalDailyGrowth,
+          gtoRewards: totalGTORewards
+        },
+        monthlyData: [] // Could be calculated from historical data
+      };
+    } catch (error) {
+      console.error("Error fetching earnings report data:", error);
+      throw error;
+    }
+  },
   getMintTopUpHistory: async (userAddress) => {
     try {
       // Mock top-up history data
