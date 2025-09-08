@@ -1314,6 +1314,85 @@ export const useStore = create((set, get) => ({
     }
   },
 
+  getMintClaimsHistory: async (userAddress) => {
+    try {
+      // In a real implementation, this would fetch from contract events or a backend API
+      // For now, we'll generate mock data based on user positions
+      const userStats = await get().getMintUserStats(userAddress);
+      
+      const mockHistory = [];
+      const now = Date.now();
+      
+      // Generate mock claim history for each position
+      userStats.positions?.forEach((position, index) => {
+        const claimedDays = parseInt(position.claimedDays);
+        const dailyRoiUsd = (parseFloat(position.principalUsd) / 1e6) * (position.dailyRoiBp / 10000);
+        
+        // Generate claims for each claimed day
+        for (let day = 1; day <= claimedDays; day++) {
+          const claimDate = new Date(now - (claimedDays - day + 1) * 24 * 60 * 60 * 1000);
+          mockHistory.push({
+            id: `${position.serverId}-${position.slotId}-${day}`,
+            date: claimDate.toISOString().split('T')[0],
+            timestamp: Math.floor(claimDate.getTime() / 1000),
+            serverId: position.serverId,
+            slotId: position.slotId,
+            horizon: position.horizon === '0' ? '2X' : '3X',
+            daysClaimed: 1,
+            roiUsd: dailyRoiUsd,
+            roiRama: dailyRoiUsd * 10, // Mock RAMA conversion
+            txHash: `0x${Math.random().toString(16).substr(2, 64)}`,
+            status: 'Completed',
+            principalUsd: parseFloat(position.principalUsd) / 1e6
+          });
+        }
+      });
+      
+      // Sort by date descending
+      return mockHistory.sort((a, b) => b.timestamp - a.timestamp);
+    } catch (error) {
+      console.error("Error fetching mint claims history:", error);
+      return [];
+    }
+  },
+
+  getMintTopUpHistory: async (userAddress) => {
+    try {
+      // Mock top-up history data
+      // In a real implementation, this would fetch from contract events
+      const mockTopUps = [
+        {
+          id: '1',
+          date: '2024-01-15',
+          timestamp: Math.floor(Date.now() / 1000) - 86400 * 5,
+          serverId: 3,
+          slotId: 1,
+          oldPrincipalUsd: 500,
+          newPrincipalUsd: 1000,
+          horizon: '3X',
+          txHash: `0x${Math.random().toString(16).substr(2, 64)}`,
+          status: 'Completed'
+        },
+        {
+          id: '2',
+          date: '2024-01-10',
+          timestamp: Math.floor(Date.now() / 1000) - 86400 * 10,
+          serverId: 2,
+          slotId: 2,
+          oldPrincipalUsd: 200,
+          newPrincipalUsd: 400,
+          horizon: '2X',
+          txHash: `0x${Math.random().toString(16).substr(2, 64)}`,
+          status: 'Completed'
+        }
+      ];
+      
+      return mockTopUps.sort((a, b) => b.timestamp - a.timestamp);
+    } catch (error) {
+      console.error("Error fetching mint top-up history:", error);
+      return [];
+    }
+  },
   getCirclePosPayment: async (userAddress, pkg, index) => {
     try {
       if (!userAddress || pkg === undefined || index === undefined) {
