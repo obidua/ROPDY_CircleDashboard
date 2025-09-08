@@ -130,10 +130,12 @@ const Sidebar = ({ isMobileMenuOpen, setIsMobileMenuOpen }) => {
     {
       title: "My Mint",
       items: [
+        { label: "Mint Dashboard", icon: "🏭", path: "/mint/dashboard" },
         { label: "Activate Servers", icon: "🚀", path: "/mint/activate-servers" },
         { label: "Portfolios (All Slots)", icon: "💼", path: "/mint/portfolios" },
         { label: "Claims & History", icon: "📋", path: "/mint/claims-history" },
         { label: "Top-up", icon: "⬆️", path: "/mint/top-up" },
+        { label: "My Circles", icon: "🔄", path: "/mint/circles" },
       ]
     },
     {

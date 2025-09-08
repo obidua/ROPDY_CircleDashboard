@@ -5,6 +5,12 @@ import MintDashboard from '../pages/MintDashboard';
 import Portfolios from '../pages/Portfolios';
 import ClaimsHistory from '../pages/ClaimsHistory';
 import TopUp from '../pages/TopUp';
+import SpotCommission from '../pages/SpotCommission';
+import DailyGrowth from '../pages/DailyGrowth';
+import RankProgress from '../pages/RankProgress';
+import GTORewards from '../pages/GTORewards';
+import Circles from '../pages/Circles';
+import ActivateServers from '../pages/ActivateServers';
 import Register from '../pages/Register';
 import Home from '../pages/Home';
 import Referral from '../pages/Referral';
@@ -38,18 +44,20 @@ function AppRoutes() {
       <Route path="/overview/announcements" element={<PlaceholderPage title="📢 Announcements" description="Stay updated with the latest news and announcements from ROPDY." />} />
 
       {/* My Mint routes */}
-      <Route path="/mint/activate-servers" element={<MintDashboard />} />
+      <Route path="/mint/dashboard" element={<MintDashboard />} />
+      <Route path="/mint/activate-servers" element={<ActivateServers />} />
       <Route path="/mint/portfolios" element={<Portfolios />} />
       <Route path="/mint/claims-history" element={<ClaimsHistory />} />
       <Route path="/mint/top-up" element={<TopUp />} />
+      <Route path="/mint/circles" element={<Circles />} />
 
       {/* Passive Income routes */}
-      <Route path="/passive/spot-commission" element={<PlaceholderPage title="💰 Spot Commission" description="View your spot commission earnings from direct referrals." />} />
-      <Route path="/passive/daily-growth" element={<PlaceholderPage title="📈 Daily Growth" description="Track your daily growth income from the pool distribution." />} />
+      <Route path="/passive/spot-commission" element={<SpotCommission />} />
+      <Route path="/passive/daily-growth" element={<DailyGrowth />} />
 
       {/* Leadership routes */}
-      <Route path="/leadership/rank-progress" element={<PlaceholderPage title="🏆 My Rank & Progress" description="Monitor your leadership tier progress and qualification status." />} />
-      <Route path="/leadership/gto-rewards" element={<PlaceholderPage title="🎁 GTO Rewards (Claim)" description="Claim your Global Turnover (GTO) leadership rewards." />} />
+      <Route path="/leadership/rank-progress" element={<RankProgress />} />
+      <Route path="/leadership/gto-rewards" element={<GTORewards />} />
       <Route path="/leadership/qualification" element={<PlaceholderPage title="📊 Qualification Tracker" description="Track your progress towards leadership tier qualifications." />} />
 
       {/* Wallet routes */}
@@ -79,7 +87,6 @@ function AppRoutes() {
 
       {/* Legacy routes for backward compatibility */}
       <Route path="/dashboard" element={<Dashboard />} />
-      <Route path="/mint-dashboard" element={<MintDashboard />} />
     </Routes>
   );
 }
