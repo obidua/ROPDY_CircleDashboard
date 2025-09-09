@@ -63,6 +63,8 @@ const web3 = new Web3(INFURA_URL);
 export const useStore = create((set, get) => ({
   getBalance: async (walletAdd) => {
 
+  },
+
   // Mint program state
   mintGlobalStats: {
     poolRamaAccounting: '1500000000000000000000', // 1500 RAMA
