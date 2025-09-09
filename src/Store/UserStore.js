@@ -62,7 +62,19 @@ const web3 = new Web3(INFURA_URL);
 
 export const useStore = create((set, get) => ({
   getBalance: async (walletAdd) => {
+    try {
+      if (!walletAdd) {
+        throw new Error("Wallet address is required.");
+      }
 
+      const balanceWei = await web3.eth.getBalance(walletAdd);
+      const balanceEth = web3.utils.fromWei(balanceWei, "ether");
+
+      return parseFloat(balanceEth).toFixed(4); // Optional: return balance with 4 decimal places
+    } catch (error) {
+      console.error("Failed to fetch balance:", error.message);
+      return null; // Or throw error depending on use case
+    }
   },
 
   // Mint program state
@@ -240,20 +252,6 @@ export const useStore = create((set, get) => ({
     localStorage.setItem(storageKey, JSON.stringify(updatedStats));
     
     return updatedStats;
-  },
-    try {
-      if (!walletAdd) {
-        throw new Error("Wallet address is required.");
-      }
-
-      const balanceWei = await web3.eth.getBalance(walletAdd);
-      const balanceEth = web3.utils.fromWei(balanceWei, "ether");
-
-      return parseFloat(balanceEth).toFixed(4); // Optional: return balance with 4 decimal places
-    } catch (error) {
-      console.error("Failed to fetch balance:", error.message);
-      return null; // Or throw error depending on use case
-    }
   },
 
   isUserExist: async (userAddress) => {
