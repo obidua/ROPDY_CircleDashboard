@@ -161,6 +161,10 @@ const Sidebar = ({ isMobileMenuOpen, setIsMobileMenuOpen }) => {
         { label: "My Direct", icon: "👥", path: "/my-direct" },
         { label: "Missed Payments", icon: "🚫", path: "/missed" },
         { label: "Profile", icon: "👤", path: "/profile" },
+      ]
+    },
+    {
+      title: "Mint Rewards",
       items: [
         { label: "Spot Commission", icon: "💰", path: "/mint/spot-commission" },
         { label: "GTO Rewards (Claim)", icon: "🎁", path: "/mint/gto-rewards" },
