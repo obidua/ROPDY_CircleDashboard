@@ -12,6 +12,8 @@ const Sidebar = ({ isMobileMenuOpen, setIsMobileMenuOpen }) => {
   const [walletAddress, setWalletAddress] = useState();
   const [walletPrompted, setWalletPrompted] = useState(false);
   const [userDisconnected, setUserDisconnected] = useState(false);
+  const [showCircleProgram, setShowCircleProgram] = useState(true);
+  const [showMintProgram, setShowMintProgram] = useState(true);
 
   const { address, isConnected } = useAppKitAccount();
   const userAddress = JSON.parse(localStorage.getItem("UserData"))?.address;
@@ -118,6 +120,22 @@ const Sidebar = ({ isMobileMenuOpen, setIsMobileMenuOpen }) => {
     setUserDisconnected(true);
   };
 
+  const toggleSection = (sectionTitle) => {
+    if (sectionTitle === "Circle Program") {
+      setShowCircleProgram(!showCircleProgram);
+    } else if (sectionTitle === "Mint Program") {
+      setShowMintProgram(!showMintProgram);
+    }
+  };
+
+  const getSectionVisibility = (sectionTitle) => {
+    if (sectionTitle === "Circle Program") {
+      return showCircleProgram;
+    } else if (sectionTitle === "Mint Program") {
+      return showMintProgram;
+    }
+    return true;
+  };
   const menuSections = [
     {
       title: "Circle Program",
@@ -178,23 +196,37 @@ const Sidebar = ({ isMobileMenuOpen, setIsMobileMenuOpen }) => {
         <nav className="px-2 py-4">
           {menuSections.map((section) => (
             <div key={section.title} className="mb-4">
-              <div className="px-4 py-2 text-sm font-semibold text-admin-cyan dark:text-admin-cyan-dark">
-                {section.title}
+              <button
+                onClick={() => toggleSection(section.title)}
+                className="w-full px-4 py-2 text-sm font-semibold text-admin-cyan dark:text-admin-cyan-dark hover:bg-admin-gold-900/30 rounded-lg transition-colors flex items-center justify-between"
+              >
+                <span>{section.title}</span>
+                <span className={`transform transition-transform duration-200 ${
+                  getSectionVisibility(section.title) ? 'rotate-90' : 'rotate-0'
+                }`}>
+                  ▶
+                </span>
+              </button>
+              <div className={`transition-all duration-300 ease-in-out ${
+                getSectionVisibility(section.title) 
+                  ? 'max-h-screen opacity-100' 
+                  : 'max-h-0 opacity-0 overflow-hidden'
+              }`}>
+                {section.items.map(({ label, icon, path }) => (
+                  <Link
+                    key={path}
+                    to={path}
+                    onClick={() => setIsMobileMenuOpen && setIsMobileMenuOpen(false)}
+                    className={`flex items-center px-4 py-2 rounded-lg mb-1 transition-colors ${pathname === path
+                      ? "bg-admin-gold-900/50 backdrop-blur-sm text-admin-cyan dark:text-admin-cyan-dark border border-admin-gold-700/50"
+                      : "hover:bg-admin-gold-900/30 text-gray-700 dark:text-gray-300 hover:text-admin-cyan dark:hover:text-admin-cyan-dark"
+                      }`}
+                  >
+                    <span className="mr-3 text-lg">{icon}</span>
+                    <span className="text-sm">{label}</span>
+                  </Link>
+                ))}
               </div>
-              {section.items.map(({ label, icon, path }) => (
-                <Link
-                  key={path}
-                  to={path}
-                  onClick={() => setIsMobileMenuOpen && setIsMobileMenuOpen(false)}
-                  className={`flex items-center px-4 py-2 rounded-lg mb-1 transition-colors ${pathname === path
-                    ? "bg-admin-gold-900/50 backdrop-blur-sm text-admin-cyan dark:text-admin-cyan-dark border border-admin-gold-700/50"
-                    : "hover:bg-admin-gold-900/30 text-gray-700 dark:text-gray-300 hover:text-admin-cyan dark:hover:text-admin-cyan-dark"
-                    }`}
-                >
-                  <span className="mr-3 text-lg">{icon}</span>
-                  <span className="text-sm">{label}</span>
-                </Link>
-              ))}
             </div>
           ))}
         </nav>
