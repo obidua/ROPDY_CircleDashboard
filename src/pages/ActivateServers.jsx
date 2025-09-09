@@ -36,7 +36,7 @@ const ActivateServers = () => {
       fetchUserMintStats(userAddress);
       fetchMintGlobalStats();
     }
-  }, [userAddress, fetchUserMintStats, fetchMintGlobalStats]);
+  }, [userAddress]);
 
   // Create server data with dynamic activation status
   const serverData = React.useMemo(() => {
