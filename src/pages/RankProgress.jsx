@@ -276,7 +276,7 @@ const RankProgress = () => {
                     <div className="space-y-2 text-sm">
                       <div className="flex justify-between">
                         <span className="text-gray-600 dark:text-gray-400">Share:</span>
-                        <span className="font-semibold">{(tier.shareBps / 100).toFixed(2)}%</span>
+                        <span className="font-semibold">{(tier.shareBps / 100).toFixed(3)}%</span>
                       </div>
                       <div className="flex justify-between">
                         <span className="text-gray-600 dark:text-gray-400">Self Biz:</span>

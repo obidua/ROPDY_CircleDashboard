@@ -324,7 +324,7 @@ const DailyGrowth = () => {
                           ${formatUSD(growth.totalPoolVolume)}
                         </td>
                         <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">
-                          {growth.userShare}%
+                          {growth.userShare.toFixed(3)}%
                         </td>
                         <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">
                           <AddressDisplay value={growth.txHash} type="tx" />

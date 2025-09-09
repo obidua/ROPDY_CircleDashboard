@@ -263,8 +263,8 @@ const ClaimsHistory = () => {
               <StatCard 
                 label="Average Daily ROI" 
                 value={userStats?.positions?.length > 0 ? 
-                  `${(userStats.positions.reduce((sum, pos) => sum + pos.dailyRoiBp, 0) / userStats.positions.length / 100).toFixed(2)}%` : 
-                  '0.00%'} 
+                  `${(userStats.positions.reduce((sum, pos) => sum + pos.dailyRoiBp, 0) / userStats.positions.length / 100).toFixed(3)}%` : 
+                  '0.000%'} 
               />
             </div>
           </div>

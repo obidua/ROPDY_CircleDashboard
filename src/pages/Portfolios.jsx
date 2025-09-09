@@ -420,7 +420,7 @@ const Portfolios = () => {
                             ${formatUSD(position.principalUsd)}
                           </td>
                           <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">
-                            {(position.dailyRoiBp / 100).toFixed(2)}%
+                            {(position.dailyRoiBp / 100).toFixed(3)}%
                           </td>
                           <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">
                             {position.claimedDays}/{position.totalDays}

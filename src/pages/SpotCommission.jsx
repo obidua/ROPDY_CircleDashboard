@@ -326,7 +326,7 @@ const SpotCommission = () => {
                           </span>
                         </td>
                         <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">
-                          {commission.percentage}%
+                          {commission.percentage.toFixed(3)}%
                         </td>
                         <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100 font-semibold text-admin-new-green">
                           ${formatUSD(commission.commissionUsd)}

@@ -379,7 +379,7 @@ const GTORewards = () => {
                           ${formatUSD(reward.globalTurnover)}
                         </td>
                         <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">
-                          {reward.sharePercentage}%
+                          {reward.sharePercentage.toFixed(3)}%
                         </td>
                         <td className="px-4 py-3 whitespace-nowrap">
                           <span className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${
