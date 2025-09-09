@@ -7,6 +7,68 @@ import { useAppKitAccount } from '@reown/appkit/react';
 import { useTransaction } from '../config/register';
 import Swal from 'sweetalert2';
 
+// Mock server data as fallback
+const mockServerData = {
+  servers: [
+    {
+      id: 1,
+      minStakeUsd: 5000000, // $5.00 in contract units (6 decimals)
+      days2x: 990,
+      dailyBp2x: 9, // 0.09% in basis points
+      days3x: 1350,
+      dailyBp3x: 14, // 0.14% in basis points
+      isActivated: false,
+      canActivate: true,
+      userSlots: 0
+    },
+    {
+      id: 2,
+      minStakeUsd: 10000000, // $10.00
+      days2x: 900,
+      dailyBp2x: 10, // 0.10%
+      days3x: 1260,
+      dailyBp3x: 16, // 0.16%
+      isActivated: false,
+      canActivate: false,
+      userSlots: 0
+    },
+    {
+      id: 3,
+      minStakeUsd: 20000000, // $20.00
+      days2x: 810,
+      dailyBp2x: 11, // 0.11%
+      days3x: 1170,
+      dailyBp3x: 17, // 0.17%
+      isActivated: false,
+      canActivate: false,
+      userSlots: 0
+    },
+    {
+      id: 4,
+      minStakeUsd: 40000000, // $40.00
+      days2x: 720,
+      dailyBp2x: 12, // 0.12%
+      days3x: 1080,
+      dailyBp3x: 18, // 0.18%
+      isActivated: false,
+      canActivate: false,
+      userSlots: 0
+    },
+    {
+      id: 5,
+      minStakeUsd: 80000000, // $80.00
+      days2x: 630,
+      dailyBp2x: 13, // 0.13%
+      days3x: 990,
+      dailyBp3x: 19, // 0.19%
+      isActivated: false,
+      canActivate: false,
+      userSlots: 0
+    }
+  ],
+  highestActivated: 0,
+  userCapRemaining: 0
+};
 const ActivateServers = () => {
   const [serverData, setServerData] = useState(null);
   const [userMintStats, setUserMintStats] = useState(null);
@@ -37,11 +99,20 @@ const ActivateServers = () => {
           console.log('Servers length:', serverActivationData?.servers?.length);
           console.log('User mint stats received:', userStatsData);
           
-          setServerData(serverActivationData);
+          // Use mock data if no servers are returned
+          if (!serverActivationData?.servers || serverActivationData.servers.length === 0) {
+            console.warn('No server data returned from store, using mock data');
+            setServerData(mockServerData);
+          } else {
+            setServerData(serverActivationData);
+          }
+          
           setUserMintStats(userStatsData);
         }
       } catch (error) {
         console.error('Error fetching server data:', error);
+        console.warn('Using mock server data due to error');
+        setServerData(mockServerData);
       } finally {
         setLoading(false);
       }
@@ -232,20 +303,24 @@ const ActivateServers = () => {
 
         {/* Server Cards Grid */}
         <section>
-          {!serverData?.servers || serverData.servers.length === 0 ? (
+          {loading ? (
+            <div className="text-center py-8">
+              <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-admin-new-green mx-auto"></div>
+              <p className="mt-4 text-admin-cyan dark:text-admin-cyan-dark">Loading server configurations...</p>
+            </div>
+          ) : !serverData?.servers || serverData.servers.length === 0 ? (
             <div className="text-center py-8">
               <div className="text-4xl mb-4">🚀</div>
               <h3 className="text-lg font-semibold text-gray-700 dark:text-gray-300 mb-2">No Server Configurations Found</h3>
               <p className="text-gray-600 dark:text-gray-400 mb-4">
-                {!serverData ? 'Loading server data...' : 'No servers are available for activation at this time.'}
+                No servers are available for activation at this time.
               </p>
-              {serverData && (
-                <div className="text-sm text-gray-500 dark:text-gray-400">
-                  <p>Debug Info:</p>
-                  <p>Server data exists: {serverData ? 'Yes' : 'No'}</p>
-                  <p>Servers array: {serverData?.servers ? `Array with ${serverData.servers.length} items` : 'Not found'}</p>
-                </div>
-              )}
+              <div className="text-sm text-gray-500 dark:text-gray-400">
+                <p>Debug Info:</p>
+                <p>Server data exists: {serverData ? 'Yes' : 'No'}</p>
+                <p>Servers array: {serverData?.servers ? `Array with ${serverData.servers.length} items` : 'Not found'}</p>
+                <p>Check console for detailed logs</p>
+              </div>
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
