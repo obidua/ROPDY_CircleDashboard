@@ -380,12 +380,31 @@ const ActivateServers = () => {
                       3x Daily ROI %
                     </th>
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 dark:text-gray-300 uppercase tracking-wider">
+                      Activation Date
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 dark:text-gray-300 uppercase tracking-wider">
+                      End Date
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 dark:text-gray-300 uppercase tracking-wider">
                       Status
                     </th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
-                  {serverData.servers.map((server) => (
+                  {serverData.servers.map((server) => {
+                    // Find the first active position for this server to get activation details
+                    const serverPosition = userMintStats?.positions?.find(pos => pos.serverId === server.id && pos.active);
+                    
+                    // Calculate activation and end dates
+                    const activationDate = serverPosition 
+                      ? new Date(serverPosition.startTime * 1000).toLocaleString()
+                      : 'N/A';
+                    
+                    const endDate = serverPosition 
+                      ? new Date((serverPosition.startTime + (serverPosition.totalDays * 86400)) * 1000).toLocaleString()
+                      : 'N/A';
+                    
+                    return (
                     <tr 
                       key={server.id} 
                       className={`hover:bg-gray-100/50 dark:hover:bg-gray-800/30 transition-colors ${
@@ -414,23 +433,67 @@ const ActivateServers = () => {
                       <td className="px-6 py-4 whitespace-nowrap text-sm font-semibold text-purple-600 dark:text-purple-400">
                         {(server.dailyBp3x / 100).toFixed(3)}%
                       </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">
+                        {server.isActivated ? (
+                          <div className="text-xs">
+                            <div className="font-medium text-admin-new-green">{activationDate}</div>
+                            {serverPosition && (
+                              <div className="text-gray-500 dark:text-gray-400 mt-1">
+                                {serverPosition.horizon === '0' ? '2X' : '3X'} Horizon
+                              </div>
+                            )}
+                          </div>
+                        ) : (
+                          <span className="text-gray-400 text-sm">Not Activated</span>
+                        )}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">
+                        {server.isActivated ? (
+                          <div className="text-xs">
+                            <div className="font-medium text-orange-600 dark:text-orange-400">{endDate}</div>
+                            {serverPosition && (
+                              <div className="text-gray-500 dark:text-gray-400 mt-1">
+                                {serverPosition.totalDays} days total
+                              </div>
+                            )}
+                          </div>
+                        ) : (
+                          <span className="text-gray-400 text-sm">-</span>
+                        )}
+                      </td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         {server.isActivated ? (
-                          <span className="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-admin-new-green/20 text-admin-new-green">
-                            Active ({server.userSlots} slots)
-                          </span>
+                          <div className="space-y-1">
+                            <span className="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-admin-new-green/20 text-admin-new-green">
+                              ✅ Active
+                            </span>
+                            <div className="text-xs text-gray-600 dark:text-gray-400">
+                              {server.userSlots} slot{server.userSlots !== 1 ? 's' : ''}
+                            </div>
+                            {serverPosition && (
+                              <div className="text-xs">
+                                <div className="text-admin-new-green font-medium">
+                                  ${formatUSD(serverPosition.principalUsd)} invested
+                                </div>
+                                <div className="text-gray-500 dark:text-gray-400">
+                                  Cap: ${formatUSD(serverPosition.capUsd)}
+                                </div>
+                              </div>
+                            )}
+                          </div>
                         ) : server.canActivate ? (
                           <span className="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">
-                            Available
+                            🔓 Available
                           </span>
                         ) : (
                           <span className="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-gray-100 text-gray-800">
-                            Locked
+                            🔒 Locked
                           </span>
                         )}
                       </td>
                     </tr>
-                  ))}
+                    );
+                  })}
                 </tbody>
               </table>
             </div>
