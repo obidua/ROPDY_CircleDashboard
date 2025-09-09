@@ -10,12 +10,14 @@ const ActivateServers = () => {
   const [serverData, setServerData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [activatingServer, setActivatingServer] = useState(null);
+  const [trxData, setTrxData] = useState(null);
 
   const { address, isConnected } = useAppKitAccount();
   const userAddress = JSON.parse(localStorage.getItem("UserData") || '{}')?.address;
 
   const getServerActivationData = useStore((state) => state.getServerActivationData);
-  const { handleSendTx, hash } = useTransaction(null);
+  const activateServer = useStore((state) => state.activateServer);
+  const { handleSendTx, hash } = useTransaction(trxData);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -35,6 +37,55 @@ const ActivateServers = () => {
     fetchData();
   }, [userAddress]);
 
+  useEffect(() => {
+    if (trxData) {
+      try {
+        handleSendTx();
+      } catch (error) {
+        console.error('Transaction send error:', error);
+        Swal.fire({
+          title: 'Transaction Failed',
+          text: 'Failed to send transaction. Please try again.',
+          icon: 'error',
+          confirmButtonColor: '#ef4444',
+        });
+        setActivatingServer(null);
+      }
+    }
+  }, [trxData, handleSendTx]);
+
+  useEffect(() => {
+    if (hash) {
+      Swal.fire({
+        title: '✅ Server Activation Successful',
+        html: `
+          <p>Server activation transaction has been sent successfully!</p>
+          <p style="margin-top: 10px;">
+            <a href="https://ramascan.com/tx/${hash}" target="_blank" rel="noopener noreferrer" style="color:#3b82f6; font-weight:bold;">
+              🔗 View Transaction on Ramascan
+            </a>
+          </p>
+        `,
+        icon: 'success',
+        confirmButtonText: 'Close',
+        confirmButtonColor: '#22c55e',
+      });
+
+      // Refresh server data
+      const refreshData = async () => {
+        try {
+          const data = await getServerActivationData(userAddress);
+          setServerData(data);
+        } catch (error) {
+          console.error('Error refreshing server data:', error);
+        }
+      };
+      refreshData();
+      
+      setActivatingServer(null);
+      setTrxData(null);
+    }
+  }, [hash, userAddress, getServerActivationData]);
   const formatUSD = (value) => {
     if (!value) return '0.00';
     return (parseFloat(value) / 1e6).toFixed(2);
@@ -93,39 +144,24 @@ const ActivateServers = () => {
       setActivatingServer(serverId);
       
       try {
-        // In a real implementation, this would call a contract method
-        // const activateTx = await activateServer(userAddress, serverId, principalUsd * 1e6, horizonThreeX);
-        // handleSendTx(activateTx);
+        // Call the activate server function from store
+        const activationTx = await activateServer(
+          userAddress, 
+          serverId, 
+          Math.floor(principalUsd * 1e6), // Convert to contract units
+          horizonThreeX
+        );
         
-        // For now, show success message
-        await Swal.fire({
-          title: 'Server Activation Initiated',
-          html: `
-            <p>Server ${serverId} activation has been initiated:</p>
-            <ul class="text-left mt-2">
-              <li><strong>Principal:</strong> $${principalUsd.toFixed(2)}</li>
-              <li><strong>Horizon:</strong> ${horizonThreeX ? '3X' : '2X'}</li>
-              <li><strong>Expected Daily ROI:</strong> ${((principalUsd * (horizonThreeX ? server.dailyBp3x : server.dailyBp2x)) / 10000).toFixed(2)} USD</li>
-            </ul>
-            <p class="mt-2 text-sm text-gray-600">This functionality will be fully implemented with contract integration.</p>
-          `,
-          icon: 'success',
-          confirmButtonColor: '#22c55e',
-        });
-        
-        // Refresh data
-        const data = await getServerActivationData(userAddress);
-        setServerData(data);
+        setTrxData(activationTx);
         
       } catch (error) {
         console.error('Server activation error:', error);
         Swal.fire({
           title: 'Activation Failed',
-          text: 'Something went wrong while activating the server.',
+          text: 'Failed to prepare activation transaction. Please try again.',
           icon: 'error',
           confirmButtonColor: '#ef4444',
         });
-      } finally {
         setActivatingServer(null);
       }
     }
