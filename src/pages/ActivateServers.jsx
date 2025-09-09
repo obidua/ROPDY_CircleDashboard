@@ -108,7 +108,6 @@ const ActivateServers = () => {
   const [userMintStats, setUserMintStats] = useState(staticUserMintStats);
   const [loading, setLoading] = useState(false);
   const [activatingServer, setActivatingServer] = useState(null);
-  const [trxData, setTrxData] = useState(null);
 
   const { address, isConnected } = useAppKitAccount();
   const userAddress = JSON.parse(localStorage.getItem("UserData") || '{}')?.address;
@@ -117,7 +116,6 @@ const ActivateServers = () => {
   // const getServerActivationData = useStore((state) => state.getServerActivationData);
   // const getMintUserStats = useStore((state) => state.getMintUserStats);
   // const activateServer = useStore((state) => state.activateServer);
-  const { handleSendTx, hash } = useTransaction(trxData);
 
   // Static data is already set in useState, no need to fetch
   // useEffect(() => {
@@ -140,56 +138,6 @@ const ActivateServers = () => {
   //   };
   //   fetchData();
   // }, [userAddress]);
-
-  useEffect(() => {
-    if (trxData) {
-      try {
-        handleSendTx();
-      } catch (error) {
-        console.error('Transaction send error:', error);
-        Swal.fire({
-          title: 'Transaction Failed',
-          text: 'Failed to send transaction. Please try again.',
-          icon: 'error',
-          confirmButtonColor: '#ef4444',
-        });
-        setActivatingServer(null);
-      }
-    }
-  }, [trxData, handleSendTx]);
-
-  useEffect(() => {
-    if (hash) {
-      Swal.fire({
-        title: '✅ Server Activation Successful',
-        html: `
-          <p>Server activation transaction has been sent successfully!</p>
-          <p style="margin-top: 10px;">
-            <a href="https://ramascan.com/tx/${hash}" target="_blank" rel="noopener noreferrer" style="color:#3b82f6; font-weight:bold;">
-              🔗 View Transaction on Ramascan
-            </a>
-          </p>
-        `,
-        icon: 'success',
-        confirmButtonText: 'Close',
-        confirmButtonColor: '#22c55e',
-      });
-
-      // Static implementation - simulate server activation
-      setServerData(prev => ({
-        ...prev,
-        servers: prev.servers.map(server => 
-          server.id === activatingServer 
-            ? { ...server, isActivated: true, userSlots: 1 }
-            : server
-        ),
-        highestActivated: Math.max(prev.highestActivated, activatingServer)
-      }));
-      
-      setActivatingServer(null);
-      setTrxData(null);
-    }
-  }, [hash, activatingServer]);
 
   const formatUSD = (value) => {
     if (!value) return '0.00';
@@ -245,26 +193,97 @@ const ActivateServers = () => {
       
       setActivatingServer(serverId);
       
-      try {
-        // Static implementation - simulate transaction
-        const mockTx = {
-          to: '0x478F02521e5A86D4bFEbaF0730446E2B45b3e95d',
-          data: '0x123456789abcdef',
-          value: '0x0'
-        };
-        
-        setTrxData(mockTx);
-        
-      } catch (error) {
-        console.error('Server activation error:', error);
-        Swal.fire({
-          title: 'Activation Failed',
-          text: 'Failed to prepare activation transaction. Please try again.',
-          icon: 'error',
-          confirmButtonColor: '#ef4444',
-        });
-        setActivatingServer(null);
-      }
+      // Simulate activation process with delay
+      setTimeout(() => {
+        try {
+          // Calculate new portfolio details
+          const principalUsdWei = principalUsd * 1e6; // Convert to contract units
+          const capUsdWei = principalUsdWei * (selectedHorizon ? 3 : 2); // 2x or 3x cap
+          const dailyRoiBp = selectedHorizon ? server.dailyBp3x : server.dailyBp2x;
+          const totalDays = selectedHorizon ? server.days3x : server.days2x;
+          
+          // Find next slot ID for this server
+          const existingSlots = userMintStats?.positions?.filter(p => p.serverId === serverId) || [];
+          const nextSlotId = existingSlots.length + 1;
+          
+          // Create new portfolio
+          const newPortfolio = {
+            serverId: serverId,
+            slotId: nextSlotId,
+            horizon: selectedHorizon ? '1' : '0', // 3X : 2X
+            principalUsd: principalUsdWei,
+            capUsd: capUsdWei,
+            dailyRoiBp: dailyRoiBp,
+            claimedDays: 0,
+            totalDays: totalDays,
+            active: true,
+            startTime: Math.floor(Date.now() / 1000),
+            claimedUsd: 0
+          };
+          
+          // Update server data
+          setServerData(prev => ({
+            ...prev,
+            servers: prev.servers.map(server => {
+              if (server.id === serverId) {
+                return { 
+                  ...server, 
+                  isActivated: true, 
+                  userSlots: (server.userSlots || 0) + 1 
+                };
+              }
+              // Enable next server if this was the highest activated
+              if (server.id === serverId + 1 && prev.highestActivated === serverId - 1) {
+                return { ...server, canActivate: true };
+              }
+              return server;
+            }),
+            highestActivated: Math.max(prev.highestActivated, serverId),
+            userCapRemaining: prev.userCapRemaining - capUsdWei
+          }));
+          
+          // Update user mint stats
+          setUserMintStats(prev => ({
+            ...prev,
+            positions: [...(prev?.positions || []), newPortfolio],
+            highestServerActivated: Math.max(prev?.highestServerActivated || 0, serverId),
+            selfBusinessUsd: (prev?.selfBusinessUsd || 0) + principalUsdWei,
+            userCapRemainingUsd: (prev?.userCapRemainingUsd || 0) - capUsdWei
+          }));
+          
+          // Show success message
+          Swal.fire({
+            title: '✅ Server Activation Successful',
+            html: `
+              <div class="text-left">
+                <p><strong>Server ${serverId} Activated Successfully!</strong></p>
+                <ul class="mt-2 space-y-1">
+                  <li><strong>Slot:</strong> #${nextSlotId}</li>
+                  <li><strong>Principal:</strong> $${formatUSD(principalUsdWei)}</li>
+                  <li><strong>Horizon:</strong> ${selectedHorizon ? '3X' : '2X'} (${totalDays} days)</li>
+                  <li><strong>Daily ROI:</strong> ${(dailyRoiBp / 100).toFixed(3)}%</li>
+                  <li><strong>Cap:</strong> $${formatUSD(capUsdWei)}</li>
+                </ul>
+                <p class="mt-3 text-sm text-gray-600">You can now add more portfolios to this server or activate the next server.</p>
+              </div>
+            `,
+            icon: 'success',
+            confirmButtonText: 'Continue',
+            confirmButtonColor: '#22c55e',
+          });
+          
+        } catch (error) {
+          console.error('Server activation error:', error);
+          Swal.fire({
+            title: 'Activation Failed',
+            text: 'Something went wrong during activation. Please try again.',
+            icon: 'error',
+            confirmButtonColor: '#ef4444',
+          });
+        } finally {
+          setActivatingServer(null);
+        }
+      }, 1500); // 1.5 second delay to simulate processing
     }
   };
 
