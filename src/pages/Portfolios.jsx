@@ -6,98 +6,31 @@ import { useAppKitAccount } from '@reown/appkit/react';
 import { useTransaction } from '../config/register';
 import Swal from 'sweetalert2';
 
-// Static data for UI demonstration
-const staticUserStats = {
-  positions: [
-    {
-      serverId: 1,
-      slotId: 1,
-      horizon: '0', // 2X
-      principalUsd: 5000000, // $5.00
-      capUsd: 15000000, // $15.00
-      dailyRoiBp: 20.2, // 0.202%
-      claimedDays: 45,
-      totalDays: 990,
-      active: true,
-      startTime: Math.floor(Date.now() / 1000) - (45 * 86400), // 45 days ago
-      claimedUsd: 4545000 // $4.545 claimed so far (45 days × $0.101/day)
-    },
-    {
-      serverId: 1,
-      slotId: 2,
-      horizon: '1', // 3X
-      principalUsd: 10000000, // $10.00
-      capUsd: 30000000, // $30.00
-      dailyRoiBp: 22.2, // 0.222%
-      claimedDays: 30,
-      totalDays: 1350,
-      active: true,
-      startTime: Math.floor(Date.now() / 1000) - (30 * 86400), // 30 days ago
-      claimedUsd: 6660000 // $6.66 claimed so far (30 days × $0.222/day)
-    },
-    {
-      serverId: 1,
-      slotId: 3,
-      horizon: '0', // 2X
-      principalUsd: 8000000, // $8.00
-      capUsd: 24000000, // $24.00
-      dailyRoiBp: 20.2, // 0.202%
-      claimedDays: 60,
-      totalDays: 990,
-      active: true,
-      startTime: Math.floor(Date.now() / 1000) - (62 * 86400), // 62 days ago (2 pending days)
-      claimedUsd: 9696000 // $9.696 claimed so far (60 days × $0.1616/day)
-    }
-  ],
-  userCapRemainingUsd: 233040000 // $233.04 remaining (adjusted for new claimed amounts)
-};
-
-const staticGlobalStats = {
-  servers: [
-    { minStakeUsd: 5000000, days2x: 990, dailyBp2x: 20.2, days3x: 1350, dailyBp3x: 22.2 },
-    { minStakeUsd: 10000000, days2x: 900, dailyBp2x: 22.2, days3x: 1260, dailyBp3x: 23.8 },
-    { minStakeUsd: 20000000, days2x: 810, dailyBp2x: 24.7, days3x: 1170, dailyBp3x: 25.6 },
-    { minStakeUsd: 40000000, days2x: 720, dailyBp2x: 27.8, days3x: 1080, dailyBp3x: 27.8 },
-    { minStakeUsd: 80000000, days2x: 600, dailyBp2x: 33.3, days3x: 930, dailyBp3x: 32.3 }
-  ]
-};
-
 const Portfolios = () => {
-  const [userStats, setUserStats] = useState(staticUserStats);
-  const [globalStats, setGlobalStats] = useState(staticGlobalStats);
   const [loading, setLoading] = useState(false);
   const [claimingPosition, setClaimingPosition] = useState(null);
 
   const { address, isConnected } = useAppKitAccount();
   const userAddress = JSON.parse(localStorage.getItem("UserData") || '{}')?.address;
 
-  // Commented out for static implementation
-  // const getMintUserStats = useStore((state) => state.getMintUserStats);
-  // const getMintGlobalStats = useStore((state) => state.getMintGlobalStats);
+  // Get data and actions from store
+  const { 
+    userMintStats, 
+    mintGlobalStats, 
+    fetchUserMintStats, 
+    fetchMintGlobalStats,
+    updateMintPortfolio
+  } = useStore();
+
+  // Load data when component mounts or userAddress changes
+  useEffect(() => {
+    if (userAddress) {
+      fetchUserMintStats(userAddress);
+      fetchMintGlobalStats();
+    }
+  }, [userAddress, fetchUserMintStats, fetchMintGlobalStats]);
 
   const { handleSendTx, hash } = useTransaction(null);
-
-  // Static data is already set, no need to fetch
-  // useEffect(() => {
-  //   const fetchData = async () => {
-  //     setLoading(true);
-  //     try {
-  //       if (userAddress) {
-  //         const [userData, globalData] = await Promise.all([
-  //           getMintUserStats(userAddress),
-  //           getMintGlobalStats()
-  //         ]);
-  //         setUserStats(userData);
-  //         setGlobalStats(globalData);
-  //       }
-  //     } catch (error) {
-  //       console.error('Error fetching portfolio data:', error);
-  //     } finally {
-  //       setLoading(false);
-  //     }
-  //   };
-  //   fetchData();
-  // }, [userAddress]);
 
   const formatUSD = (value) => {
     if (!value) return '0.00';
@@ -126,22 +59,22 @@ const Portfolios = () => {
   };
 
   const calculateTotalPendingROI = () => {
-    if (!userStats?.positions) return 0;
-    return userStats.positions.reduce((total, position) => {
+    if (!userMintStats?.positions) return 0;
+    return userMintStats.positions.reduce((total, position) => {
       return total + calculatePendingROI(position);
     }, 0);
   };
 
   const calculateTotalPrincipal = () => {
-    if (!userStats?.positions) return 0;
-    return userStats.positions.reduce((total, position) => {
+    if (!userMintStats?.positions) return 0;
+    return userMintStats.positions.reduce((total, position) => {
       return total + parseFloat(position.principalUsd || 0) / 1e6;
     }, 0);
   };
 
   const getServerConfig = (serverId) => {
-    if (!globalStats?.servers) return null;
-    return globalStats.servers[serverId - 1];
+    if (!mintGlobalStats?.servers) return null;
+    return mintGlobalStats.servers[serverId - 1];
   };
 
   const handleClaim = async (position) => {
@@ -180,6 +113,15 @@ const Portfolios = () => {
         icon: 'info',
         confirmButtonColor: '#22c55e',
       });
+      
+      // Update the position's claimed days (for demo purposes)
+      const updatedPosition = {
+        ...position,
+        claimedDays: position.claimedDays + pendingDays,
+        claimedUsd: (position.claimedUsd || 0) + (pendingROI * 1e6)
+      };
+      
+      updateMintPortfolio(userAddress, position.serverId, position.slotId, updatedPosition);
     } catch (error) {
       console.error('Claim error:', error);
       Swal.fire({
@@ -205,7 +147,7 @@ const Portfolios = () => {
     }
 
     // Check if user is at cap
-    const capRemaining = parseFloat(userStats?.userCapRemainingUsd || 0) / 1e6;
+    const capRemaining = parseFloat(userMintStats?.userCapRemainingUsd || 0) / 1e6;
     if (capRemaining > 0) {
       Swal.fire({
         title: 'Cap not reached',
@@ -296,7 +238,7 @@ const Portfolios = () => {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
             <StatCard 
               label="Active Portfolios" 
-              value={userStats?.positions?.length || 0} 
+              value={userMintStats?.positions?.length || 0} 
             />
             <StatCard 
               label="Total Principal (USD)" 
@@ -308,7 +250,7 @@ const Portfolios = () => {
             />
             <StatCard 
               label="Cap Remaining (USD)" 
-              value={userStats ? `$${formatUSD(userStats.userCapRemainingUsd)}` : 'Loading...'} 
+              value={userMintStats ? `$${formatUSD(userMintStats.userCapRemainingUsd)}` : '$0.00'} 
             />
           </div>
         </section>
@@ -336,7 +278,7 @@ const Portfolios = () => {
                 className="bg-blue-600 text-white px-4 py-2 rounded-lg font-semibold hover:bg-blue-700 transition-colors"
                 onClick={() => {
                   // Claim all available ROI
-                  const claimablePositions = userStats?.positions?.filter(p => calculatePendingDays(p) > 0) || [];
+                  const claimablePositions = userMintStats?.positions?.filter(p => calculatePendingDays(p) > 0) || [];
                   if (claimablePositions.length === 0) {
                     Swal.fire('No Claims Available', 'There are no positions with claimable ROI.', 'info');
                   } else {
@@ -360,7 +302,7 @@ const Portfolios = () => {
           <div className="bg-white/50 dark:bg-gray-900/30 backdrop-blur-sm rounded-lg p-4 sm:p-6 border border-admin-new-green/30 overflow-x-auto">
             <h2 className="text-xl font-semibold text-admin-cyan dark:text-admin-cyan-dark mb-6">All Active Positions</h2>
             
-            {!userStats?.positions || userStats.positions.length === 0 ? (
+            {!userMintStats?.positions || userMintStats.positions.length === 0 ? (
               <div className="text-center py-8">
                 <div className="text-4xl mb-4">📊</div>
                 <h3 className="text-lg font-semibold text-gray-700 dark:text-gray-300 mb-2">No Active Portfolios</h3>
@@ -396,7 +338,7 @@ const Portfolios = () => {
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
-                    {userStats.positions.map((position, index) => {
+                    {userMintStats.positions.map((position, index) => {
                       const pendingDays = calculatePendingDays(position);
                       const pendingROI = calculatePendingROI(position);
                       const serverConfig = getServerConfig(position.serverId);
@@ -456,7 +398,7 @@ const Portfolios = () => {
                                   {claimingPosition === `${position.serverId}-${position.slotId}` ? 'Claiming...' : 'Claim'}
                                 </button>
                               )}
-                              {parseFloat(userStats?.userCapRemainingUsd || 0) === 0 && (
+                              {parseFloat(userMintStats?.userCapRemainingUsd || 0) === 0 && (
                                 <button
                                   onClick={() => handleTopUp(position)}
                                   className="bg-blue-600 text-white px-3 py-1 rounded text-xs font-semibold hover:bg-blue-700 transition-colors"
