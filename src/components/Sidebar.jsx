@@ -120,7 +120,7 @@ const Sidebar = ({ isMobileMenuOpen, setIsMobileMenuOpen }) => {
 
   const menuSections = [
     {
-      title: "Overview",
+      title: "Circle Program",
       items: [
         { label: "Dashboard", icon: "📊", path: "/overview/dashboard" },
         { label: "Quick Actions", icon: "⚡", path: "/overview/quick-actions" },
@@ -155,42 +155,30 @@ const Sidebar = ({ isMobileMenuOpen, setIsMobileMenuOpen }) => {
     },
     {
       title: "Wallet",
-      items: [
-        { label: "Balances & Allowances", icon: "💳", path: "/wallet/balances" },
-        { label: "Deposit / Withdraw", icon: "🔄", path: "/wallet/deposit-withdraw" },
-        { label: "Price Feed", icon: "📊", path: "/wallet/price-feed" },
-      ]
     },
-    {
-      title: "Reports",
+        { label: "Circle Dashboard", icon: "⚡", path: "/dashboard" },
+        { label: "Overview / Tree", icon: "📈", path: "/overview" },
       items: [
-        { label: "Earnings Report", icon: "📈", path: "/reports/earnings" },
-        { label: "Team Business", icon: "👥", path: "/reports/team-business" },
-        { label: "Export CSV", icon: "📄", path: "/reports/export" },
-      ]
-    },
-    {
       title: "Contracts",
       items: [
-        { label: "Addresses & ABIs", icon: "🔗", path: "/contracts/addresses" },
-        { label: "Server Parameters", icon: "⚙️", path: "/contracts/parameters" },
-        { label: "Event Logs", icon: "📝", path: "/contracts/events" },
-      ]
-    },
     {
       title: "Support",
-      items: [
-        { label: "Create Ticket", icon: "🎫", path: "/support/create" },
-        { label: "My Tickets", icon: "📋", path: "/support/tickets" },
-        { label: "FAQs & Docs", icon: "📚", path: "/support/docs" },
+        { label: "CP1 (Direct)", icon: "🧾", path: "/cp1" },
+        { label: "CP2 (Random)", icon: "🎲", path: "/cp2" },
       ]
     },
     {
-      title: "Settings",
+      title: "Mint Program",
       items: [
-        { label: "Profile", icon: "👤", path: "/settings/profile" },
-        { label: "Notifications", icon: "🔔", path: "/settings/notifications" },
-        { label: "Security (2FA/KYC)", icon: "🔒", path: "/settings/security" },
+        { label: "Mint Dashboard", icon: "🏭", path: "/mint/dashboard" },
+        { label: "Activate Servers", icon: "🚀", path: "/mint/activate-servers" },
+        { label: "Portfolios (All Slots)", icon: "💼", path: "/mint/portfolios" },
+        { label: "Claims & History", icon: "📋", path: "/mint/claims-history" },
+        { label: "Top-up", icon: "⬆️", path: "/mint/top-up" },
+        { label: "Spot Commission", icon: "💰", path: "/mint/spot-commission" },
+        { label: "Daily Growth", icon: "📈", path: "/mint/daily-growth" },
+        { label: "My Rank & Progress", icon: "🏆", path: "/mint/rank-progress" },
+        { label: "GTO Rewards (Claim)", icon: "🎁", path: "/mint/gto-rewards" },
       ]
     },
   ];
