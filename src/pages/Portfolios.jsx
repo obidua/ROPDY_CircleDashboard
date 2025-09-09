@@ -6,41 +6,98 @@ import { useAppKitAccount } from '@reown/appkit/react';
 import { useTransaction } from '../config/register';
 import Swal from 'sweetalert2';
 
+// Static data for UI demonstration
+const staticUserStats = {
+  positions: [
+    {
+      serverId: 1,
+      slotId: 1,
+      horizon: '0', // 2X
+      principalUsd: 5000000, // $5.00
+      capUsd: 15000000, // $15.00
+      dailyRoiBp: 9, // 0.09%
+      claimedDays: 45,
+      totalDays: 990,
+      active: true,
+      startTime: Math.floor(Date.now() / 1000) - (45 * 86400), // 45 days ago
+      claimedUsd: 2025000 // $2.025 claimed so far
+    },
+    {
+      serverId: 1,
+      slotId: 2,
+      horizon: '1', // 3X
+      principalUsd: 10000000, // $10.00
+      capUsd: 30000000, // $30.00
+      dailyRoiBp: 14, // 0.14%
+      claimedDays: 30,
+      totalDays: 1350,
+      active: true,
+      startTime: Math.floor(Date.now() / 1000) - (30 * 86400), // 30 days ago
+      claimedUsd: 4200000 // $4.20 claimed so far
+    },
+    {
+      serverId: 1,
+      slotId: 3,
+      horizon: '0', // 2X
+      principalUsd: 8000000, // $8.00
+      capUsd: 24000000, // $24.00
+      dailyRoiBp: 9, // 0.09%
+      claimedDays: 60,
+      totalDays: 990,
+      active: true,
+      startTime: Math.floor(Date.now() / 1000) - (62 * 86400), // 62 days ago (2 pending days)
+      claimedUsd: 4320000 // $4.32 claimed so far
+    }
+  ],
+  userCapRemainingUsd: 277000000 // $277.00 remaining
+};
+
+const staticGlobalStats = {
+  servers: [
+    { minStakeUsd: 5000000, days2x: 990, dailyBp2x: 9, days3x: 1350, dailyBp3x: 14 },
+    { minStakeUsd: 10000000, days2x: 900, dailyBp2x: 10, days3x: 1260, dailyBp3x: 16 },
+    { minStakeUsd: 20000000, days2x: 810, dailyBp2x: 11, days3x: 1170, dailyBp3x: 17 },
+    { minStakeUsd: 40000000, days2x: 720, dailyBp2x: 12, days3x: 1080, dailyBp3x: 18 },
+    { minStakeUsd: 80000000, days2x: 630, dailyBp2x: 13, days3x: 990, dailyBp3x: 19 }
+  ]
+};
+
 const Portfolios = () => {
-  const [userStats, setUserStats] = useState(null);
-  const [globalStats, setGlobalStats] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [userStats, setUserStats] = useState(staticUserStats);
+  const [globalStats, setGlobalStats] = useState(staticGlobalStats);
+  const [loading, setLoading] = useState(false);
   const [claimingPosition, setClaimingPosition] = useState(null);
 
   const { address, isConnected } = useAppKitAccount();
   const userAddress = JSON.parse(localStorage.getItem("UserData") || '{}')?.address;
 
-  const getMintUserStats = useStore((state) => state.getMintUserStats);
-  const getMintGlobalStats = useStore((state) => state.getMintGlobalStats);
+  // Commented out for static implementation
+  // const getMintUserStats = useStore((state) => state.getMintUserStats);
+  // const getMintGlobalStats = useStore((state) => state.getMintGlobalStats);
 
   const { handleSendTx, hash } = useTransaction(null);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      setLoading(true);
-      try {
-        if (userAddress) {
-          const [userData, globalData] = await Promise.all([
-            getMintUserStats(userAddress),
-            getMintGlobalStats()
-          ]);
-          setUserStats(userData);
-          setGlobalStats(globalData);
-        }
-      } catch (error) {
-        console.error('Error fetching portfolio data:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchData();
-  }, [userAddress]);
+  // Static data is already set, no need to fetch
+  // useEffect(() => {
+  //   const fetchData = async () => {
+  //     setLoading(true);
+  //     try {
+  //       if (userAddress) {
+  //         const [userData, globalData] = await Promise.all([
+  //           getMintUserStats(userAddress),
+  //           getMintGlobalStats()
+  //         ]);
+  //         setUserStats(userData);
+  //         setGlobalStats(globalData);
+  //       }
+  //     } catch (error) {
+  //       console.error('Error fetching portfolio data:', error);
+  //     } finally {
+  //       setLoading(false);
+  //     }
+  //   };
+  //   fetchData();
+  // }, [userAddress]);
 
   const formatUSD = (value) => {
     if (!value) return '0.00';

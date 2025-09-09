@@ -6,32 +6,71 @@ import { useStore } from '../Store/UserStore';
 import { useAppKitAccount } from '@reown/appkit/react';
 import Swal from 'sweetalert2';
 
+// Static data for UI demonstration
+const staticRewardsData = [
+  {
+    id: 1,
+    month: 'December 2024',
+    tier: 1,
+    rewardUsd: 125.50,
+    rewardRama: 1255.00,
+    globalTurnover: 25000.00,
+    sharePercentage: 0.50,
+    status: 'Pending',
+    txHash: null
+  },
+  {
+    id: 2,
+    month: 'November 2024',
+    tier: 1,
+    rewardUsd: 98.75,
+    rewardRama: 987.50,
+    globalTurnover: 19750.00,
+    sharePercentage: 0.50,
+    status: 'Claimed',
+    txHash: '0xbff560bc1b390a3ec37ae2c7ee71f9e972885d3fc924a9196f8411b446726a67'
+  },
+  {
+    id: 3,
+    month: 'October 2024',
+    tier: 1,
+    rewardUsd: 156.25,
+    rewardRama: 1562.50,
+    globalTurnover: 31250.00,
+    sharePercentage: 0.50,
+    status: 'Claimed',
+    txHash: '0x3a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8e9f0a1'
+  }
+];
+
 const GTORewards = () => {
-  const [rewardsData, setRewardsData] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [rewardsData, setRewardsData] = useState(staticRewardsData);
+  const [loading, setLoading] = useState(false);
   const [claimingReward, setClaimingReward] = useState(null);
 
   const { address, isConnected } = useAppKitAccount();
   const userAddress = JSON.parse(localStorage.getItem("UserData") || '{}')?.address;
-  const getGTORewardsData = useStore((state) => state.getGTORewardsData);
+  
+  // Commented out for static implementation
+  // const getGTORewardsData = useStore((state) => state.getGTORewardsData);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      setLoading(true);
-      try {
-        if (userAddress) {
-          const data = await getGTORewardsData(userAddress);
-          setRewardsData(data);
-        }
-      } catch (error) {
-        console.error('Error fetching GTO rewards data:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchData();
-  }, [userAddress]);
+  // Static data is already set, no need to fetch
+  // useEffect(() => {
+  //   const fetchData = async () => {
+  //     setLoading(true);
+  //     try {
+  //       if (userAddress) {
+  //         const data = await getGTORewardsData(userAddress);
+  //         setRewardsData(data);
+  //       }
+  //     } catch (error) {
+  //       console.error('Error fetching GTO rewards data:', error);
+  //     } finally {
+  //       setLoading(false);
+  //     }
+  //   };
+  //   fetchData();
+  // }, [userAddress]);
 
   const formatUSD = (value) => {
     if (!value) return '0.00';

@@ -4,38 +4,128 @@ import BlockchainAnimation from '../components/BlockchainAnimation';
 import AddressDisplay from '../components/AddressDisplay';
 import { useStore } from '../Store/UserStore';
 
+// Static data for UI demonstration
+const staticClaimsHistory = [
+  {
+    id: 1,
+    serverId: 1,
+    slotId: 1,
+    horizon: '2X',
+    principalUsd: 5.00,
+    daysClaimed: 3,
+    roiUsd: 0.135, // 3 days * $0.045 daily
+    roiRama: 1.35,
+    txHash: '0xbff560bc1b390a3ec37ae2c7ee71f9e972885d3fc924a9196f8411b446726a67',
+    status: 'Completed',
+    timestamp: Math.floor(Date.now() / 1000) - (86400 * 2), // 2 days ago
+    date: new Date(Date.now() - (86400 * 2 * 1000)).toISOString().split('T')[0]
+  },
+  {
+    id: 2,
+    serverId: 1,
+    slotId: 2,
+    horizon: '3X',
+    principalUsd: 10.00,
+    daysClaimed: 5,
+    roiUsd: 0.70, // 5 days * $0.14 daily
+    roiRama: 7.00,
+    txHash: '0x3a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8e9f0a1',
+    status: 'Completed',
+    timestamp: Math.floor(Date.now() / 1000) - (86400 * 1), // 1 day ago
+    date: new Date(Date.now() - (86400 * 1 * 1000)).toISOString().split('T')[0]
+  },
+  {
+    id: 3,
+    serverId: 1,
+    slotId: 1,
+    horizon: '2X',
+    principalUsd: 5.00,
+    daysClaimed: 7,
+    roiUsd: 0.315, // 7 days * $0.045 daily
+    roiRama: 3.15,
+    txHash: '0x7f8e9d0c1b2a3f4e5d6c7b8a9f0e1d2c3b4a5f6e7d8c9b0a1f2e3d4c5b6a798',
+    status: 'Completed',
+    timestamp: Math.floor(Date.now() / 1000) - (86400 * 7), // 7 days ago
+    date: new Date(Date.now() - (86400 * 7 * 1000)).toISOString().split('T')[0]
+  },
+  {
+    id: 4,
+    serverId: 1,
+    slotId: 3,
+    horizon: '2X',
+    principalUsd: 8.00,
+    daysClaimed: 10,
+    roiUsd: 0.72, // 10 days * $0.072 daily
+    roiRama: 7.20,
+    txHash: '0x9a8b7c6d5e4f3a2b1c0d9e8f7a6b5c4d3e2f1a0b9c8d7e6f5a4b3c2d1e0f9a8',
+    status: 'Completed',
+    timestamp: Math.floor(Date.now() / 1000) - (86400 * 14), // 14 days ago
+    date: new Date(Date.now() - (86400 * 14 * 1000)).toISOString().split('T')[0]
+  }
+];
+
+const staticUserStats = {
+  positions: [
+    {
+      serverId: 1,
+      slotId: 1,
+      horizon: '0', // 2X
+      principalUsd: 5000000, // $5.00
+      dailyRoiBp: 9 // 0.09%
+    },
+    {
+      serverId: 1,
+      slotId: 2,
+      horizon: '1', // 3X
+      principalUsd: 10000000, // $10.00
+      dailyRoiBp: 14 // 0.14%
+    },
+    {
+      serverId: 1,
+      slotId: 3,
+      horizon: '0', // 2X
+      principalUsd: 8000000, // $8.00
+      dailyRoiBp: 9 // 0.09%
+    }
+  ],
+  highestServerActivated: 1,
+  userCapRemainingUsd: 277000000 // $277.00
+};
+
 const ClaimsHistory = () => {
-  const [claimsHistory, setClaimsHistory] = useState([]);
-  const [userStats, setUserStats] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [claimsHistory, setClaimsHistory] = useState(staticClaimsHistory);
+  const [userStats, setUserStats] = useState(staticUserStats);
+  const [loading, setLoading] = useState(false);
   const [selectedServer, setSelectedServer] = useState('all');
   const [selectedTimeframe, setSelectedTimeframe] = useState('all');
 
   const userAddress = JSON.parse(localStorage.getItem("UserData") || '{}')?.address;
-  const getMintClaimsHistory = useStore((state) => state.getMintClaimsHistory);
-  const getMintUserStats = useStore((state) => state.getMintUserStats);
+  
+  // Commented out for static implementation
+  // const getMintClaimsHistory = useStore((state) => state.getMintClaimsHistory);
+  // const getMintUserStats = useStore((state) => state.getMintUserStats);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      setLoading(true);
-      try {
-        if (userAddress) {
-          const [historyData, statsData] = await Promise.all([
-            getMintClaimsHistory(userAddress),
-            getMintUserStats(userAddress)
-          ]);
-          setClaimsHistory(historyData);
-          setUserStats(statsData);
-        }
-      } catch (error) {
-        console.error('Error fetching claims history:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchData();
-  }, [userAddress]);
+  // Static data is already set, no need to fetch
+  // useEffect(() => {
+  //   const fetchData = async () => {
+  //     setLoading(true);
+  //     try {
+  //       if (userAddress) {
+  //         const [historyData, statsData] = await Promise.all([
+  //           getMintClaimsHistory(userAddress),
+  //           getMintUserStats(userAddress)
+  //         ]);
+  //         setClaimsHistory(historyData);
+  //         setUserStats(statsData);
+  //       }
+  //     } catch (error) {
+  //       console.error('Error fetching claims history:', error);
+  //     } finally {
+  //       setLoading(false);
+  //     }
+  //   };
+  //   fetchData();
+  // }, [userAddress]);
 
   const formatUSD = (value) => {
     if (!value) return '0.00';

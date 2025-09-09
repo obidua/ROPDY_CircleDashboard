@@ -7,8 +7,8 @@ import { useAppKitAccount } from '@reown/appkit/react';
 import { useTransaction } from '../config/register';
 import Swal from 'sweetalert2';
 
-// Mock server data as fallback
-const mockServerData = {
+// Static server data for UI demonstration
+const staticServerData = {
   servers: [
     {
       id: 1,
@@ -17,8 +17,8 @@ const mockServerData = {
       dailyBp2x: 9, // 0.09% in basis points
       days3x: 1350,
       dailyBp3x: 14, // 0.14% in basis points
-      isActivated: false,
-      canActivate: true,
+      isActivated: true,
+      canActivate: false,
       userSlots: 0
     },
     {
@@ -29,7 +29,7 @@ const mockServerData = {
       days3x: 1260,
       dailyBp3x: 16, // 0.16%
       isActivated: false,
-      canActivate: false,
+      canActivate: true,
       userSlots: 0
     },
     {
@@ -66,12 +66,46 @@ const mockServerData = {
       userSlots: 0
     }
   ],
-  highestActivated: 0,
-  userCapRemaining: 0
+  highestActivated: 1,
+  userCapRemaining: 285000000 // $285.00
 };
+
+// Static user mint stats for UI demonstration
+const staticUserMintStats = {
+  positions: [
+    {
+      serverId: 1,
+      slotId: 1,
+      horizon: '0', // 2X
+      principalUsd: 5000000, // $5.00
+      capUsd: 15000000, // $15.00
+      dailyRoiBp: 9,
+      claimedDays: 45,
+      totalDays: 990,
+      active: true,
+      startTime: Math.floor(Date.now() / 1000) - (45 * 86400)
+    },
+    {
+      serverId: 1,
+      slotId: 2,
+      horizon: '1', // 3X
+      principalUsd: 10000000, // $10.00
+      capUsd: 30000000, // $30.00
+      dailyRoiBp: 14,
+      claimedDays: 30,
+      totalDays: 1350,
+      active: true,
+      startTime: Math.floor(Date.now() / 1000) - (30 * 86400)
+    }
+  ],
+  highestServerActivated: 1,
+  userCapRemainingUsd: 285000000, // $285.00
+  selfBusinessUsd: 15000000 // $15.00
+};
+
 const ActivateServers = () => {
-  const [serverData, setServerData] = useState(null);
-  const [userMintStats, setUserMintStats] = useState(null);
+  const [serverData, setServerData] = useState(staticServerData);
+  const [userMintStats, setUserMintStats] = useState(staticUserMintStats);
   const [loading, setLoading] = useState(true);
   const [activatingServer, setActivatingServer] = useState(null);
   const [trxData, setTrxData] = useState(null);
@@ -79,47 +113,33 @@ const ActivateServers = () => {
   const { address, isConnected } = useAppKitAccount();
   const userAddress = JSON.parse(localStorage.getItem("UserData") || '{}')?.address;
 
-  const getServerActivationData = useStore((state) => state.getServerActivationData);
-  const getMintUserStats = useStore((state) => state.getMintUserStats);
-  const activateServer = useStore((state) => state.activateServer);
+  // Commented out for static implementation
+  // const getServerActivationData = useStore((state) => state.getServerActivationData);
+  // const getMintUserStats = useStore((state) => state.getMintUserStats);
+  // const activateServer = useStore((state) => state.activateServer);
   const { handleSendTx, hash } = useTransaction(trxData);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      setLoading(true);
-      try {
-        if (userAddress) {
-          const [serverActivationData, userStatsData] = await Promise.all([
-            getServerActivationData(userAddress),
-            getMintUserStats(userAddress)
-          ]);
-          
-          console.log('Server activation data received:', serverActivationData);
-          console.log('Servers array:', serverActivationData?.servers);
-          console.log('Servers length:', serverActivationData?.servers?.length);
-          console.log('User mint stats received:', userStatsData);
-          
-          // Use mock data if no servers are returned
-          if (!serverActivationData?.servers || serverActivationData.servers.length === 0) {
-            console.warn('No server data returned from store, using mock data');
-            setServerData(mockServerData);
-          } else {
-            setServerData(serverActivationData);
-          }
-          
-          setUserMintStats(userStatsData);
-        }
-      } catch (error) {
-        console.error('Error fetching server data:', error);
-        console.warn('Using mock server data due to error');
-        setServerData(mockServerData);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchData();
-  }, [userAddress]);
+  // Static data is already set in useState, no need to fetch
+  // useEffect(() => {
+  //   const fetchData = async () => {
+  //     setLoading(true);
+  //     try {
+  //       if (userAddress) {
+  //         const [serverActivationData, userStatsData] = await Promise.all([
+  //           getServerActivationData(userAddress),
+  //           getMintUserStats(userAddress)
+  //         ]);
+  //         setServerData(serverActivationData);
+  //         setUserMintStats(userStatsData);
+  //       }
+  //     } catch (error) {
+  //       console.error('Error fetching server data:', error);
+  //     } finally {
+  //       setLoading(false);
+  //     }
+  //   };
+  //   fetchData();
+  // }, [userAddress]);
 
   useEffect(() => {
     if (trxData) {
@@ -155,25 +175,21 @@ const ActivateServers = () => {
         confirmButtonColor: '#22c55e',
       });
 
-      // Refresh server data
-      const refreshData = async () => {
-        try {
-          const [serverActivationData, userStatsData] = await Promise.all([
-            getServerActivationData(userAddress),
-            getMintUserStats(userAddress)
-          ]);
-          setServerData(serverActivationData);
-          setUserMintStats(userStatsData);
-        } catch (error) {
-          console.error('Error refreshing server data:', error);
-        }
-      };
-      refreshData();
+      // Static implementation - simulate server activation
+      setServerData(prev => ({
+        ...prev,
+        servers: prev.servers.map(server => 
+          server.id === activatingServer 
+            ? { ...server, isActivated: true, userSlots: 1 }
+            : server
+        ),
+        highestActivated: Math.max(prev.highestActivated, activatingServer)
+      }));
       
       setActivatingServer(null);
       setTrxData(null);
     }
-  }, [hash, userAddress, getServerActivationData, getMintUserStats]);
+  }, [hash, activatingServer]);
 
   const formatUSD = (value) => {
     if (!value) return '0.00';
@@ -230,15 +246,14 @@ const ActivateServers = () => {
       setActivatingServer(serverId);
       
       try {
-        // Call the activate server function from store
-        const activationTx = await activateServer(
-          userAddress, 
-          serverId, 
-          Math.floor(principalUsd * 1e6), // Convert to contract units
-          selectedHorizon
-        );
+        // Static implementation - simulate transaction
+        const mockTx = {
+          to: '0x478F02521e5A86D4bFEbaF0730446E2B45b3e95d',
+          data: '0x123456789abcdef',
+          value: '0x0'
+        };
         
-        setTrxData(activationTx);
+        setTrxData(mockTx);
         
       } catch (error) {
         console.error('Server activation error:', error);
@@ -303,128 +318,105 @@ const ActivateServers = () => {
 
         {/* Server Cards Grid */}
         <section>
-          {loading ? (
-            <div className="text-center py-8">
-              <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-admin-new-green mx-auto"></div>
-              <p className="mt-4 text-admin-cyan dark:text-admin-cyan-dark">Loading server configurations...</p>
-            </div>
-          ) : !serverData?.servers || serverData.servers.length === 0 ? (
-            <div className="text-center py-8">
-              <div className="text-4xl mb-4">🚀</div>
-              <h3 className="text-lg font-semibold text-gray-700 dark:text-gray-300 mb-2">No Server Configurations Found</h3>
-              <p className="text-gray-600 dark:text-gray-400 mb-4">
-                No servers are available for activation at this time.
-              </p>
-              <div className="text-sm text-gray-500 dark:text-gray-400">
-                <p>Debug Info:</p>
-                <p>Server data exists: {serverData ? 'Yes' : 'No'}</p>
-                <p>Servers array: {serverData?.servers ? `Array with ${serverData.servers.length} items` : 'Not found'}</p>
-                <p>Check console for detailed logs</p>
-              </div>
-            </div>
-          ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-              {serverData.servers.map((server) => (
-                <ServerCard
-                  key={server.id}
-                  server={server}
-                  userAddress={userAddress}
-                  isConnected={isConnected}
-                  activatingServer={activatingServer}
-                  handleActivateServer={handleActivateServer}
-                  highestActivatedServer={serverData.highestActivated || 0}
-                />
-              ))}
-            </div>
-          )}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+            {serverData.servers.map((server) => (
+              <ServerCard
+                key={server.id}
+                server={server}
+                userAddress={userAddress}
+                isConnected={isConnected}
+                activatingServer={activatingServer}
+                handleActivateServer={handleActivateServer}
+                highestActivatedServer={serverData.highestActivated || 0}
+              />
+            ))}
+          </div>
         </section>
 
         {/* Server Table (Optional) */}
-        {serverData?.servers && serverData.servers.length > 0 && (
-          <section className="mb-8">
-            <div className="bg-white/50 dark:bg-gray-900/30 backdrop-blur-sm rounded-lg p-4 sm:p-6 border border-admin-new-green/30">
-              <h2 className="text-xl font-semibold text-admin-cyan dark:text-admin-cyan-dark mb-6">Server Configurations (Table View)</h2>
-              
-              <div className="overflow-x-auto">
-                <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-                  <thead className="bg-white/70 dark:bg-gray-800/50">
-                    <tr>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 dark:text-gray-300 uppercase tracking-wider">
-                        Server
-                      </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 dark:text-gray-300 uppercase tracking-wider">
-                        Min Stake
-                      </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 dark:text-gray-300 uppercase tracking-wider">
-                        2x Horizon (days)
-                      </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 dark:text-gray-300 uppercase tracking-wider">
-                        2x Daily ROI %
-                      </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 dark:text-gray-300 uppercase tracking-wider">
-                        3x Horizon (days)
-                      </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 dark:text-gray-300 uppercase tracking-wider">
-                        3x Daily ROI %
-                      </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 dark:text-gray-300 uppercase tracking-wider">
-                        Status
-                      </th>
+        <section className="mb-8">
+          <div className="bg-white/50 dark:bg-gray-900/30 backdrop-blur-sm rounded-lg p-4 sm:p-6 border border-admin-new-green/30">
+            <h2 className="text-xl font-semibold text-admin-cyan dark:text-admin-cyan-dark mb-6">Server Configurations (Table View)</h2>
+            
+            <div className="overflow-x-auto">
+              <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                <thead className="bg-white/70 dark:bg-gray-800/50">
+                  <tr>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 dark:text-gray-300 uppercase tracking-wider">
+                      Server
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 dark:text-gray-300 uppercase tracking-wider">
+                      Min Stake
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 dark:text-gray-300 uppercase tracking-wider">
+                      2x Horizon (days)
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 dark:text-gray-300 uppercase tracking-wider">
+                      2x Daily ROI %
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 dark:text-gray-300 uppercase tracking-wider">
+                      3x Horizon (days)
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 dark:text-gray-300 uppercase tracking-wider">
+                      3x Daily ROI %
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 dark:text-gray-300 uppercase tracking-wider">
+                      Status
+                    </th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
+                  {serverData.servers.map((server) => (
+                    <tr 
+                      key={server.id} 
+                      className={`hover:bg-gray-100/50 dark:hover:bg-gray-800/30 transition-colors ${
+                        server.isActivated 
+                          ? 'bg-admin-new-green/10' 
+                          : server.canActivate 
+                            ? 'bg-blue-50/50 dark:bg-blue-900/10' 
+                            : 'bg-gray-50/50 dark:bg-gray-800/20 opacity-60'
+                      }`}
+                    >
+                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-gray-100">
+                        Server {server.id}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">
+                        ${formatUSD(server.minStakeUsd)}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">
+                        {server.days2x}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm font-semibold text-blue-600 dark:text-blue-400">
+                        {(server.dailyBp2x / 100).toFixed(2)}%
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">
+                        {server.days3x}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm font-semibold text-purple-600 dark:text-purple-400">
+                        {(server.dailyBp3x / 100).toFixed(2)}%
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        {server.isActivated ? (
+                          <span className="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-admin-new-green/20 text-admin-new-green">
+                            Active ({server.userSlots} slots)
+                          </span>
+                        ) : server.canActivate ? (
+                          <span className="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">
+                            Available
+                          </span>
+                        ) : (
+                          <span className="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-gray-100 text-gray-800">
+                            Locked
+                          </span>
+                        )}
+                      </td>
                     </tr>
-                  </thead>
-                  <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
-                    {serverData.servers.map((server) => (
-                      <tr 
-                        key={server.id} 
-                        className={`hover:bg-gray-100/50 dark:hover:bg-gray-800/30 transition-colors ${
-                          server.isActivated 
-                            ? 'bg-admin-new-green/10' 
-                            : server.canActivate 
-                              ? 'bg-blue-50/50 dark:bg-blue-900/10' 
-                              : 'bg-gray-50/50 dark:bg-gray-800/20 opacity-60'
-                        }`}
-                      >
-                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-gray-100">
-                          Server {server.id}
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">
-                          ${formatUSD(server.minStakeUsd)}
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">
-                          {server.days2x}
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm font-semibold text-blue-600 dark:text-blue-400">
-                          {(server.dailyBp2x / 100).toFixed(2)}%
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">
-                          {server.days3x}
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm font-semibold text-purple-600 dark:text-purple-400">
-                          {(server.dailyBp3x / 100).toFixed(2)}%
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          {server.isActivated ? (
-                            <span className="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-admin-new-green/20 text-admin-new-green">
-                              Active ({server.userSlots} slots)
-                            </span>
-                          ) : server.canActivate ? (
-                            <span className="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">
-                              Available
-                            </span>
-                          ) : (
-                            <span className="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-gray-100 text-gray-800">
-                              Locked
-                            </span>
-                          )}
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
+                  ))}
+                </tbody>
+              </table>
             </div>
-          </section>
-        )}
+          </div>
+        </section>
 
         {/* Notes Section */}
         <section>

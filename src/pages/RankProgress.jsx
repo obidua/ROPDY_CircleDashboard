@@ -3,30 +3,76 @@ import StatCard from '../components/StatCard';
 import BlockchainAnimation from '../components/BlockchainAnimation';
 import { useStore } from '../Store/UserStore';
 
+// Static data for UI demonstration
+const staticLeadershipData = {
+  progress: {
+    currentTier: 1,
+    nextTier: 2,
+    selfBusiness: 15000000, // $15.00
+    requiredSelfBusiness: 250000000, // $250.00
+    directs: 3,
+    requiredDirects: 4,
+    teamSize: 12,
+    requiredTeamSize: 25
+  },
+  tiers: [
+    { shareBps: 500, selfBiz: 100000000, directs: 2, teamSize: 10 }, // Tier 1: 5%, $100, 2 directs, 10 team
+    { shareBps: 800, selfBiz: 250000000, directs: 4, teamSize: 25 }, // Tier 2: 8%, $250, 4 directs, 25 team
+    { shareBps: 1200, selfBiz: 500000000, directs: 6, teamSize: 50 }, // Tier 3: 12%, $500, 6 directs, 50 team
+    { shareBps: 1600, selfBiz: 1000000000, directs: 8, teamSize: 100 }, // Tier 4: 16%, $1000, 8 directs, 100 team
+    { shareBps: 2000, selfBiz: 2000000000, directs: 10, teamSize: 200 }, // Tier 5: 20%, $2000, 10 directs, 200 team
+    { shareBps: 2400, selfBiz: 4000000000, directs: 12, teamSize: 400 }, // Tier 6: 24%, $4000, 12 directs, 400 team
+    { shareBps: 2800, selfBiz: 8000000000, directs: 15, teamSize: 800 }, // Tier 7: 28%, $8000, 15 directs, 800 team
+    { shareBps: 3200, selfBiz: 16000000000, directs: 20, teamSize: 1600 } // Tier 8: 32%, $16000, 20 directs, 1600 team
+  ],
+  userTiers: [
+    { active: true }, // Tier 1 qualified
+    { active: false },
+    { active: false },
+    { active: false },
+    { active: false },
+    { active: false },
+    { active: false },
+    { active: false }
+  ],
+  tierStates: [
+    { qualifiedCount: 125 },
+    { qualifiedCount: 89 },
+    { qualifiedCount: 56 },
+    { qualifiedCount: 34 },
+    { qualifiedCount: 21 },
+    { qualifiedCount: 13 },
+    { qualifiedCount: 8 },
+    { qualifiedCount: 5 }
+  ]
+};
+
 const RankProgress = () => {
-  const [leadershipData, setLeadershipData] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [leadershipData, setLeadershipData] = useState(staticLeadershipData);
+  const [loading, setLoading] = useState(false);
 
   const userAddress = JSON.parse(localStorage.getItem("UserData") || '{}')?.address;
-  const getLeadershipData = useStore((state) => state.getLeadershipData);
+  
+  // Commented out for static implementation
+  // const getLeadershipData = useStore((state) => state.getLeadershipData);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      setLoading(true);
-      try {
-        if (userAddress) {
-          const data = await getLeadershipData(userAddress);
-          setLeadershipData(data);
-        }
-      } catch (error) {
-        console.error('Error fetching leadership data:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchData();
-  }, [userAddress]);
+  // Static data is already set, no need to fetch
+  // useEffect(() => {
+  //   const fetchData = async () => {
+  //     setLoading(true);
+  //     try {
+  //       if (userAddress) {
+  //         const data = await getLeadershipData(userAddress);
+  //         setLeadershipData(data);
+  //       }
+  //     } catch (error) {
+  //       console.error('Error fetching leadership data:', error);
+  //     } finally {
+  //       setLoading(false);
+  //     }
+  //   };
+  //   fetchData();
+  // }, [userAddress]);
 
   const formatUSD = (value) => {
     if (!value) return '0.00';

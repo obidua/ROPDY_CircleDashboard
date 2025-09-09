@@ -4,31 +4,87 @@ import BlockchainAnimation from '../components/BlockchainAnimation';
 import AddressDisplay from '../components/AddressDisplay';
 import { useStore } from '../Store/UserStore';
 
+// Static data for UI demonstration
+const staticGrowthData = [
+  {
+    id: 1,
+    poolShare: 2.50, // $2.50 share
+    poolShareRama: 25.00, // 25 RAMA
+    totalPoolVolume: 1000.00, // $1000 total pool
+    userShare: 0.25, // 0.25% share
+    txHash: '0xbff560bc1b390a3ec37ae2c7ee71f9e972885d3fc924a9196f8411b446726a67',
+    timestamp: Math.floor(Date.now() / 1000) - (86400 * 1), // 1 day ago
+    date: new Date(Date.now() - (86400 * 1 * 1000)).toISOString().split('T')[0]
+  },
+  {
+    id: 2,
+    poolShare: 3.75, // $3.75 share
+    poolShareRama: 37.50, // 37.5 RAMA
+    totalPoolVolume: 1500.00, // $1500 total pool
+    userShare: 0.25, // 0.25% share
+    txHash: '0x3a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8e9f0a1',
+    timestamp: Math.floor(Date.now() / 1000) - (86400 * 2), // 2 days ago
+    date: new Date(Date.now() - (86400 * 2 * 1000)).toISOString().split('T')[0]
+  },
+  {
+    id: 3,
+    poolShare: 1.25, // $1.25 share
+    poolShareRama: 12.50, // 12.5 RAMA
+    totalPoolVolume: 500.00, // $500 total pool
+    userShare: 0.25, // 0.25% share
+    txHash: '0x7f8e9d0c1b2a3f4e5d6c7b8a9f0e1d2c3b4a5f6e7d8c9b0a1f2e3d4c5b6a798',
+    timestamp: Math.floor(Date.now() / 1000) - (86400 * 3), // 3 days ago
+    date: new Date(Date.now() - (86400 * 3 * 1000)).toISOString().split('T')[0]
+  },
+  {
+    id: 4,
+    poolShare: 5.00, // $5.00 share
+    poolShareRama: 50.00, // 50 RAMA
+    totalPoolVolume: 2000.00, // $2000 total pool
+    userShare: 0.25, // 0.25% share
+    txHash: '0x9a8b7c6d5e4f3a2b1c0d9e8f7a6b5c4d3e2f1a0b9c8d7e6f5a4b3c2d1e0f9a8',
+    timestamp: Math.floor(Date.now() / 1000) - (86400 * 7), // 7 days ago
+    date: new Date(Date.now() - (86400 * 7 * 1000)).toISOString().split('T')[0]
+  },
+  {
+    id: 5,
+    poolShare: 4.25, // $4.25 share
+    poolShareRama: 42.50, // 42.5 RAMA
+    totalPoolVolume: 1700.00, // $1700 total pool
+    userShare: 0.25, // 0.25% share
+    txHash: '0x1f2e3d4c5b6a798f0e1d2c3b4a5f6e7d8c9b0a1f2e3d4c5b6a7980f1e2d3c4b',
+    timestamp: Math.floor(Date.now() / 1000) - (86400 * 14), // 14 days ago
+    date: new Date(Date.now() - (86400 * 14 * 1000)).toISOString().split('T')[0]
+  }
+];
+
 const DailyGrowth = () => {
-  const [growthData, setGrowthData] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [growthData, setGrowthData] = useState(staticGrowthData);
+  const [loading, setLoading] = useState(false);
   const [selectedTimeframe, setSelectedTimeframe] = useState('all');
 
   const userAddress = JSON.parse(localStorage.getItem("UserData") || '{}')?.address;
-  const getDailyGrowthData = useStore((state) => state.getDailyGrowthData);
+  
+  // Commented out for static implementation
+  // const getDailyGrowthData = useStore((state) => state.getDailyGrowthData);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      setLoading(true);
-      try {
-        if (userAddress) {
-          const data = await getDailyGrowthData(userAddress);
-          setGrowthData(data);
-        }
-      } catch (error) {
-        console.error('Error fetching daily growth data:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchData();
-  }, [userAddress]);
+  // Static data is already set, no need to fetch
+  // useEffect(() => {
+  //   const fetchData = async () => {
+  //     setLoading(true);
+  //     try {
+  //       if (userAddress) {
+  //         const data = await getDailyGrowthData(userAddress);
+  //         setGrowthData(data);
+  //       }
+  //     } catch (error) {
+  //       console.error('Error fetching daily growth data:', error);
+  //     } finally {
+  //       setLoading(false);
+  //     }
+  //   };
+  //   fetchData();
+  // }, [userAddress]);
 
   const formatUSD = (value) => {
     if (!value) return '0.00';

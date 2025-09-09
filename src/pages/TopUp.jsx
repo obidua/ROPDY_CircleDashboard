@@ -7,45 +7,107 @@ import { useAppKitAccount } from '@reown/appkit/react';
 import { useTransaction } from '../config/register';
 import Swal from 'sweetalert2';
 
+// Static data for UI demonstration
+const staticUserStats = {
+  positions: [
+    {
+      serverId: 1,
+      slotId: 1,
+      horizon: '0', // 2X
+      principalUsd: 5000000, // $5.00
+      capUsd: 15000000, // $15.00
+      dailyRoiBp: 9,
+      claimedDays: 990, // At cap
+      totalDays: 990,
+      active: true,
+      claimedUsd: 15000000 // $15.00 - reached cap
+    },
+    {
+      serverId: 1,
+      slotId: 2,
+      horizon: '1', // 3X
+      principalUsd: 10000000, // $10.00
+      capUsd: 30000000, // $30.00
+      dailyRoiBp: 14,
+      claimedDays: 1350, // At cap
+      totalDays: 1350,
+      active: true,
+      claimedUsd: 30000000 // $30.00 - reached cap
+    }
+  ],
+  userCapRemainingUsd: 0 // At cap, can top-up
+};
+
+const staticTopUpHistory = [
+  {
+    id: 1,
+    serverId: 1,
+    slotId: 1,
+    oldPrincipalUsd: 5.00,
+    newPrincipalUsd: 8.00,
+    horizon: '2X',
+    timestamp: Math.floor(Date.now() / 1000) - (86400 * 30), // 30 days ago
+    txHash: '0xbff560bc1b390a3ec37ae2c7ee71f9e972885d3fc924a9196f8411b446726a67',
+    status: 'Completed'
+  },
+  {
+    id: 2,
+    serverId: 1,
+    slotId: 2,
+    oldPrincipalUsd: 10.00,
+    newPrincipalUsd: 15.00,
+    horizon: '3X',
+    timestamp: Math.floor(Date.now() / 1000) - (86400 * 15), // 15 days ago
+    txHash: '0x3a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8e9f0a1',
+    status: 'Completed'
+  }
+];
+
+const staticGlobalStats = {
+  totalVolume: 125000000000, // $125,000
+  totalUsers: 2500
+};
+
 const TopUp = () => {
-  const [userStats, setUserStats] = useState(null);
-  const [topUpHistory, setTopUpHistory] = useState([]);
-  const [globalStats, setGlobalStats] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [userStats, setUserStats] = useState(staticUserStats);
+  const [topUpHistory, setTopUpHistory] = useState(staticTopUpHistory);
+  const [globalStats, setGlobalStats] = useState(staticGlobalStats);
+  const [loading, setLoading] = useState(false);
   const [processingTopUp, setProcessingTopUp] = useState(false);
 
   const { address, isConnected } = useAppKitAccount();
   const userAddress = JSON.parse(localStorage.getItem("UserData") || '{}')?.address;
 
-  const getMintUserStats = useStore((state) => state.getMintUserStats);
-  const getMintTopUpHistory = useStore((state) => state.getMintTopUpHistory);
-  const getMintGlobalStats = useStore((state) => state.getMintGlobalStats);
+  // Commented out for static implementation
+  // const getMintUserStats = useStore((state) => state.getMintUserStats);
+  // const getMintTopUpHistory = useStore((state) => state.getMintTopUpHistory);
+  // const getMintGlobalStats = useStore((state) => state.getMintGlobalStats);
 
   const { handleSendTx, hash } = useTransaction(null);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      setLoading(true);
-      try {
-        if (userAddress) {
-          const [statsData, historyData, globalData] = await Promise.all([
-            getMintUserStats(userAddress),
-            getMintTopUpHistory(userAddress),
-            getMintGlobalStats()
-          ]);
-          setUserStats(statsData);
-          setTopUpHistory(historyData);
-          setGlobalStats(globalData);
-        }
-      } catch (error) {
-        console.error('Error fetching top-up data:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchData();
-  }, [userAddress]);
+  // Static data is already set, no need to fetch
+  // useEffect(() => {
+  //   const fetchData = async () => {
+  //     setLoading(true);
+  //     try {
+  //       if (userAddress) {
+  //         const [statsData, historyData, globalData] = await Promise.all([
+  //           getMintUserStats(userAddress),
+  //           getMintTopUpHistory(userAddress),
+  //           getMintGlobalStats()
+  //         ]);
+  //         setUserStats(statsData);
+  //         setTopUpHistory(historyData);
+  //         setGlobalStats(globalData);
+  //       }
+  //     } catch (error) {
+  //       console.error('Error fetching top-up data:', error);
+  //     } finally {
+  //       setLoading(false);
+  //     }
+  //   };
+  //   fetchData();
+  // }, [userAddress]);
 
   const formatUSD = (value) => {
     if (!value) return '0.00';

@@ -6,39 +6,143 @@ import { useStore } from '../Store/UserStore';
 import { useAppKitAccount } from '@reown/appkit/react';
 import RamaCard, { EarnedRamaCard } from '../components/RamaCard';
 
+// Static data for UI demonstration
+const staticGlobalStats = {
+  poolRamaAccounting: '1500000000000000000000', // 1500 RAMA
+  servers: [
+    {
+      minStakeUsd: 5000000, // $5.00
+      days2x: 990,
+      dailyBp2x: 9, // 0.09%
+      days3x: 1350,
+      dailyBp3x: 14 // 0.14%
+    },
+    {
+      minStakeUsd: 10000000, // $10.00
+      days2x: 900,
+      dailyBp2x: 10, // 0.10%
+      days3x: 1260,
+      dailyBp3x: 16 // 0.16%
+    },
+    {
+      minStakeUsd: 20000000, // $20.00
+      days2x: 810,
+      dailyBp2x: 11, // 0.11%
+      days3x: 1170,
+      dailyBp3x: 17 // 0.17%
+    },
+    {
+      minStakeUsd: 40000000, // $40.00
+      days2x: 720,
+      dailyBp2x: 12, // 0.12%
+      days3x: 1080,
+      dailyBp3x: 18 // 0.18%
+    },
+    {
+      minStakeUsd: 80000000, // $80.00
+      days2x: 630,
+      dailyBp2x: 13, // 0.13%
+      days3x: 990,
+      dailyBp3x: 19 // 0.19%
+    }
+  ],
+  tiers: [
+    { shareBps: 500, selfBiz: 100000000, directs: 2, teamSize: 10 }, // Tier 1: 5%, $100, 2 directs, 10 team
+    { shareBps: 800, selfBiz: 250000000, directs: 4, teamSize: 25 }, // Tier 2: 8%, $250, 4 directs, 25 team
+    { shareBps: 1200, selfBiz: 500000000, directs: 6, teamSize: 50 }, // Tier 3: 12%, $500, 6 directs, 50 team
+    { shareBps: 1600, selfBiz: 1000000000, directs: 8, teamSize: 100 }, // Tier 4: 16%, $1000, 8 directs, 100 team
+    { shareBps: 2000, selfBiz: 2000000000, directs: 10, teamSize: 200 }, // Tier 5: 20%, $2000, 10 directs, 200 team
+    { shareBps: 2400, selfBiz: 4000000000, directs: 12, teamSize: 400 }, // Tier 6: 24%, $4000, 12 directs, 400 team
+    { shareBps: 2800, selfBiz: 8000000000, directs: 15, teamSize: 800 }, // Tier 7: 28%, $8000, 15 directs, 800 team
+    { shareBps: 3200, selfBiz: 16000000000, directs: 20, teamSize: 1600 } // Tier 8: 32%, $16000, 20 directs, 1600 team
+  ],
+  tierStates: [
+    { qualifiedCount: 125 },
+    { qualifiedCount: 89 },
+    { qualifiedCount: 56 },
+    { qualifiedCount: 34 },
+    { qualifiedCount: 21 },
+    { qualifiedCount: 13 },
+    { qualifiedCount: 8 },
+    { qualifiedCount: 5 }
+  ],
+  spotBps: [500, 300, 200, 100, 100], // 5%, 3%, 2%, 1%, 1%
+  growthBps: [1500, 800, 600, 400, 200] // 15%, 8%, 6%, 4%, 2%
+};
+
+const staticUserStats = {
+  positions: [
+    {
+      serverId: 1,
+      slotId: 1,
+      horizon: '0', // 2X
+      principalUsd: 5000000, // $5.00
+      capUsd: 15000000, // $15.00
+      dailyRoiBp: 9,
+      claimedDays: 45,
+      totalDays: 990,
+      active: true
+    },
+    {
+      serverId: 1,
+      slotId: 2,
+      horizon: '1', // 3X
+      principalUsd: 10000000, // $10.00
+      capUsd: 30000000, // $30.00
+      dailyRoiBp: 14,
+      claimedDays: 30,
+      totalDays: 1350,
+      active: true
+    }
+  ],
+  highestServerActivated: 1,
+  userCapRemainingUsd: 285000000, // $285.00
+  selfBusinessUsd: 15000000, // $15.00
+  directs: 3,
+  teamSize: 12,
+  tierUsers: [
+    { active: true }, // Tier 1 qualified
+    { active: false },
+    { active: false },
+    { active: false },
+    { active: false },
+    { active: false },
+    { active: false },
+    { active: false }
+  ]
+};
+
 const MintDashboard = () => {
-  const [globalStats, setGlobalStats] = useState(null);
-  const [userStats, setUserStats] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [globalStats, setGlobalStats] = useState(staticGlobalStats);
+  const [userStats, setUserStats] = useState(staticUserStats);
+  const [loading, setLoading] = useState(false);
 
   const { address, isConnected } = useAppKitAccount();
   const userAddress = JSON.parse(localStorage.getItem("UserData") || '{}')?.address;
 
-  const getMintGlobalStats = useStore((state) => state.getMintGlobalStats);
-  const getMintUserStats = useStore((state) => state.getMintUserStats);
+  // Commented out for static implementation
+  // const getMintGlobalStats = useStore((state) => state.getMintGlobalStats);
+  // const getMintUserStats = useStore((state) => state.getMintUserStats);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      setLoading(true);
-      try {
-        // Fetch global stats
-        const globalData = await getMintGlobalStats();
-        setGlobalStats(globalData);
-
-        // Fetch user stats if user address is available
-        if (userAddress) {
-          const userData = await getMintUserStats(userAddress);
-          setUserStats(userData);
-        }
-      } catch (error) {
-        console.error('Error fetching mint data:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchData();
-  }, [userAddress]);
+  // Static data is already set, no need to fetch
+  // useEffect(() => {
+  //   const fetchData = async () => {
+  //     setLoading(true);
+  //     try {
+  //       const globalData = await getMintGlobalStats();
+  //       setGlobalStats(globalData);
+  //       if (userAddress) {
+  //         const userData = await getMintUserStats(userAddress);
+  //         setUserStats(userData);
+  //       }
+  //     } catch (error) {
+  //       console.error('Error fetching mint data:', error);
+  //     } finally {
+  //       setLoading(false);
+  //     }
+  //   };
+  //   fetchData();
+  // }, [userAddress]);
 
   const formatRama = (value) => {
     if (!value) return '0.00000';

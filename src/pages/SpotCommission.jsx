@@ -4,32 +4,93 @@ import BlockchainAnimation from '../components/BlockchainAnimation';
 import AddressDisplay from '../components/AddressDisplay';
 import { useStore } from '../Store/UserStore';
 
+// Static data for UI demonstration
+const staticCommissionData = [
+  {
+    id: 1,
+    fromUser: 'User #1234',
+    level: 1,
+    percentage: 5,
+    commissionUsd: 0.25, // 5% of $5.00
+    commissionRama: 2.50,
+    txHash: '0xbff560bc1b390a3ec37ae2c7ee71f9e972885d3fc924a9196f8411b446726a67',
+    timestamp: Math.floor(Date.now() / 1000) - (86400 * 1), // 1 day ago
+    date: new Date(Date.now() - (86400 * 1 * 1000)).toISOString().split('T')[0]
+  },
+  {
+    id: 2,
+    fromUser: 'User #5678',
+    level: 2,
+    percentage: 3,
+    commissionUsd: 0.30, // 3% of $10.00
+    commissionRama: 3.00,
+    txHash: '0x3a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8e9f0a1',
+    timestamp: Math.floor(Date.now() / 1000) - (86400 * 2), // 2 days ago
+    date: new Date(Date.now() - (86400 * 2 * 1000)).toISOString().split('T')[0]
+  },
+  {
+    id: 3,
+    fromUser: 'User #9012',
+    level: 1,
+    percentage: 5,
+    commissionUsd: 1.00, // 5% of $20.00
+    commissionRama: 10.00,
+    txHash: '0x7f8e9d0c1b2a3f4e5d6c7b8a9f0e1d2c3b4a5f6e7d8c9b0a1f2e3d4c5b6a798',
+    timestamp: Math.floor(Date.now() / 1000) - (86400 * 3), // 3 days ago
+    date: new Date(Date.now() - (86400 * 3 * 1000)).toISOString().split('T')[0]
+  },
+  {
+    id: 4,
+    fromUser: 'User #3456',
+    level: 3,
+    percentage: 2,
+    commissionUsd: 0.16, // 2% of $8.00
+    commissionRama: 1.60,
+    txHash: '0x9a8b7c6d5e4f3a2b1c0d9e8f7a6b5c4d3e2f1a0b9c8d7e6f5a4b3c2d1e0f9a8',
+    timestamp: Math.floor(Date.now() / 1000) - (86400 * 7), // 7 days ago
+    date: new Date(Date.now() - (86400 * 7 * 1000)).toISOString().split('T')[0]
+  },
+  {
+    id: 5,
+    fromUser: 'User #7890',
+    level: 4,
+    percentage: 1,
+    commissionUsd: 0.05, // 1% of $5.00
+    commissionRama: 0.50,
+    txHash: '0x1f2e3d4c5b6a798f0e1d2c3b4a5f6e7d8c9b0a1f2e3d4c5b6a7980f1e2d3c4b',
+    timestamp: Math.floor(Date.now() / 1000) - (86400 * 14), // 14 days ago
+    date: new Date(Date.now() - (86400 * 14 * 1000)).toISOString().split('T')[0]
+  }
+];
+
 const SpotCommission = () => {
-  const [commissionData, setCommissionData] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [commissionData, setCommissionData] = useState(staticCommissionData);
+  const [loading, setLoading] = useState(false);
   const [selectedLevel, setSelectedLevel] = useState('all');
   const [selectedTimeframe, setSelectedTimeframe] = useState('all');
 
   const userAddress = JSON.parse(localStorage.getItem("UserData") || '{}')?.address;
-  const getSpotCommissionData = useStore((state) => state.getSpotCommissionData);
+  
+  // Commented out for static implementation
+  // const getSpotCommissionData = useStore((state) => state.getSpotCommissionData);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      setLoading(true);
-      try {
-        if (userAddress) {
-          const data = await getSpotCommissionData(userAddress);
-          setCommissionData(data);
-        }
-      } catch (error) {
-        console.error('Error fetching spot commission data:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchData();
-  }, [userAddress]);
+  // Static data is already set, no need to fetch
+  // useEffect(() => {
+  //   const fetchData = async () => {
+  //     setLoading(true);
+  //     try {
+  //       if (userAddress) {
+  //         const data = await getSpotCommissionData(userAddress);
+  //         setCommissionData(data);
+  //       }
+  //     } catch (error) {
+  //       console.error('Error fetching spot commission data:', error);
+  //     } finally {
+  //       setLoading(false);
+  //     }
+  //   };
+  //   fetchData();
+  // }, [userAddress]);
 
   const formatUSD = (value) => {
     if (!value) return '0.00';
