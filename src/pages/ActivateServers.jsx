@@ -387,13 +387,13 @@ const ActivateServers = () => {
                         {server.days2x}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm font-semibold text-blue-600 dark:text-blue-400">
-                        {(server.dailyBp2x / 100).toFixed(2)}%
+                        {(server.dailyBp2x / 100).toFixed(3)}%
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">
                         {server.days3x}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm font-semibold text-purple-600 dark:text-purple-400">
-                        {(server.dailyBp3x / 100).toFixed(2)}%
+                        {(server.dailyBp3x / 100).toFixed(3)}%
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         {server.isActivated ? (
