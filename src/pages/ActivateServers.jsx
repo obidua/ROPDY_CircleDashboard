@@ -22,7 +22,13 @@ const ActivateServers = () => {
     fetchUserMintStats, 
     fetchMintGlobalStats, 
     addMintPortfolio 
-  } = useStore();
+  } = useStore((state) => ({
+    userMintStats: state.userMintStats,
+    mintGlobalStats: state.mintGlobalStats,
+    fetchUserMintStats: state.fetchUserMintStats,
+    fetchMintGlobalStats: state.fetchMintGlobalStats,
+    addMintPortfolio: state.addMintPortfolio
+  }));
 
   // Load user mint stats when component mounts or userAddress changes
   useEffect(() => {

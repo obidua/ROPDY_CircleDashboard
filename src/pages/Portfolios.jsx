@@ -20,7 +20,13 @@ const Portfolios = () => {
     fetchUserMintStats, 
     fetchMintGlobalStats,
     updateMintPortfolio
-  } = useStore();
+  } = useStore((state) => ({
+    userMintStats: state.userMintStats,
+    mintGlobalStats: state.mintGlobalStats,
+    fetchUserMintStats: state.fetchUserMintStats,
+    fetchMintGlobalStats: state.fetchMintGlobalStats,
+    updateMintPortfolio: state.updateMintPortfolio
+  }));
 
   // Load data when component mounts or userAddress changes
   useEffect(() => {
