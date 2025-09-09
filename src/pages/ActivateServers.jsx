@@ -106,7 +106,7 @@ const staticUserMintStats = {
 const ActivateServers = () => {
   const [serverData, setServerData] = useState(staticServerData);
   const [userMintStats, setUserMintStats] = useState(staticUserMintStats);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [activatingServer, setActivatingServer] = useState(null);
   const [trxData, setTrxData] = useState(null);
 
