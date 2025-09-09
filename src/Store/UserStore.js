@@ -62,6 +62,183 @@ const web3 = new Web3(INFURA_URL);
 
 export const useStore = create((set, get) => ({
   getBalance: async (walletAdd) => {
+
+  // Mint program state
+  mintGlobalStats: {
+    poolRamaAccounting: '1500000000000000000000', // 1500 RAMA
+    servers: [
+      {
+        id: 1,
+        minStakeUsd: 5000000, // $5.00
+        days2x: 990,
+        dailyBp2x: 20.2, // 0.202%
+        days3x: 1350,
+        dailyBp3x: 22.2 // 0.222%
+      },
+      {
+        id: 2,
+        minStakeUsd: 10000000, // $10.00
+        days2x: 900,
+        dailyBp2x: 22.2, // 0.222%
+        days3x: 1260,
+        dailyBp3x: 23.8 // 0.238%
+      },
+      {
+        id: 3,
+        minStakeUsd: 20000000, // $20.00
+        days2x: 810,
+        dailyBp2x: 24.7, // 0.247%
+        days3x: 1170,
+        dailyBp3x: 25.6 // 0.256%
+      },
+      {
+        id: 4,
+        minStakeUsd: 40000000, // $40.00
+        days2x: 720,
+        dailyBp2x: 27.8, // 0.278%
+        days3x: 1080,
+        dailyBp3x: 27.8 // 0.278%
+      },
+      {
+        id: 5,
+        minStakeUsd: 80000000, // $80.00
+        days2x: 600,
+        dailyBp2x: 33.3, // 0.333%
+        days3x: 930,
+        dailyBp3x: 32.3 // 0.323%
+      }
+    ],
+    tiers: [
+      { shareBps: 500, selfBiz: 100000000, directs: 2, teamSize: 10 },
+      { shareBps: 800, selfBiz: 250000000, directs: 4, teamSize: 25 },
+      { shareBps: 1200, selfBiz: 500000000, directs: 6, teamSize: 50 },
+      { shareBps: 1600, selfBiz: 1000000000, directs: 8, teamSize: 100 },
+      { shareBps: 2000, selfBiz: 2000000000, directs: 10, teamSize: 200 },
+      { shareBps: 2400, selfBiz: 4000000000, directs: 12, teamSize: 400 },
+      { shareBps: 2800, selfBiz: 8000000000, directs: 15, teamSize: 800 },
+      { shareBps: 3200, selfBiz: 16000000000, directs: 20, teamSize: 1600 }
+    ],
+    tierStates: [
+      { qualifiedCount: 125 },
+      { qualifiedCount: 89 },
+      { qualifiedCount: 56 },
+      { qualifiedCount: 34 },
+      { qualifiedCount: 21 },
+      { qualifiedCount: 13 },
+      { qualifiedCount: 8 },
+      { qualifiedCount: 5 }
+    ],
+    spotBps: [500, 300, 200, 100, 100],
+    growthBps: [1500, 800, 600, 400, 200]
+  },
+
+  userMintStats: {
+    positions: [],
+    highestServerActivated: 0,
+    userCapRemainingUsd: 300000000, // $300.00
+    selfBusinessUsd: 0,
+    directs: 0,
+    teamSize: 0,
+    tierUsers: Array(8).fill({ active: false })
+  },
+
+  // Mint program actions
+  fetchMintGlobalStats: () => {
+    // This function loads the global mint stats (already set above)
+    // In a real app, this would fetch from an API or blockchain
+    return get().mintGlobalStats;
+  },
+
+  fetchUserMintStats: (userAddress) => {
+    if (!userAddress) return;
+    
+    // Try to load from localStorage first
+    const storageKey = `userMintStats_${userAddress}`;
+    const stored = localStorage.getItem(storageKey);
+    
+    if (stored) {
+      try {
+        const parsedStats = JSON.parse(stored);
+        set({ userMintStats: parsedStats });
+        return parsedStats;
+      } catch (error) {
+        console.error('Error parsing stored mint stats:', error);
+      }
+    }
+    
+    // If no stored data, use default
+    const defaultStats = {
+      positions: [],
+      highestServerActivated: 0,
+      userCapRemainingUsd: 300000000, // $300.00
+      selfBusinessUsd: 0,
+      directs: 0,
+      teamSize: 0,
+      tierUsers: Array(8).fill({ active: false })
+    };
+    
+    set({ userMintStats: defaultStats });
+    return defaultStats;
+  },
+
+  addMintPortfolio: (userAddress, newPortfolio) => {
+    if (!userAddress || !newPortfolio) return;
+    
+    const currentStats = get().userMintStats;
+    const updatedPositions = [...currentStats.positions, newPortfolio];
+    
+    // Update highest server activated
+    const newHighest = Math.max(currentStats.highestServerActivated, newPortfolio.serverId);
+    
+    // Update self business (add principal amount)
+    const newSelfBusiness = currentStats.selfBusinessUsd + newPortfolio.principalUsd;
+    
+    // Update cap remaining (subtract principal amount)
+    const newCapRemaining = Math.max(0, currentStats.userCapRemainingUsd - newPortfolio.principalUsd);
+    
+    const updatedStats = {
+      ...currentStats,
+      positions: updatedPositions,
+      highestServerActivated: newHighest,
+      selfBusinessUsd: newSelfBusiness,
+      userCapRemainingUsd: newCapRemaining
+    };
+    
+    // Update state
+    set({ userMintStats: updatedStats });
+    
+    // Persist to localStorage
+    const storageKey = `userMintStats_${userAddress}`;
+    localStorage.setItem(storageKey, JSON.stringify(updatedStats));
+    
+    return updatedStats;
+  },
+
+  updateMintPortfolio: (userAddress, serverId, slotId, updatedPortfolio) => {
+    if (!userAddress || !serverId || !slotId || !updatedPortfolio) return;
+    
+    const currentStats = get().userMintStats;
+    const updatedPositions = currentStats.positions.map(position => {
+      if (position.serverId === serverId && position.slotId === slotId) {
+        return { ...position, ...updatedPortfolio };
+      }
+      return position;
+    });
+    
+    const updatedStats = {
+      ...currentStats,
+      positions: updatedPositions
+    };
+    
+    // Update state
+    set({ userMintStats: updatedStats });
+    
+    // Persist to localStorage
+    const storageKey = `userMintStats_${userAddress}`;
+    localStorage.setItem(storageKey, JSON.stringify(updatedStats));
+    
+    return updatedStats;
+  },
     try {
       if (!walletAdd) {
         throw new Error("Wallet address is required.");
