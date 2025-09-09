@@ -154,17 +154,20 @@ const Sidebar = ({ isMobileMenuOpen, setIsMobileMenuOpen }) => {
       ]
     },
     {
-      title: "Wallet",
-    },
+      title: "Circle Program",
+      items: [
         { label: "Circle Dashboard", icon: "⚡", path: "/dashboard" },
         { label: "Overview / Tree", icon: "📈", path: "/overview" },
-      items: [
-      title: "Contracts",
-      items: [
-    {
-      title: "Support",
+        { label: "My Direct", icon: "👥", path: "/my-direct" },
+        { label: "My Circles", icon: "🔄", path: "/circles" },
+        { label: "Purchase Circle", icon: "🛒", path: "/purchase" },
+        { label: "Settlements", icon: "📥", path: "/settlements" },
+        { label: "Earnings", icon: "💰", path: "/earnings" },
         { label: "CP1 (Direct)", icon: "🧾", path: "/cp1" },
         { label: "CP2 (Random)", icon: "🎲", path: "/cp2" },
+        { label: "Missed Payments", icon: "🚫", path: "/missed" },
+        { label: "Profile", icon: "👤", path: "/profile" },
+        { label: "Settings", icon: "⚙️", path: "/settings" },
       ]
     },
     {
