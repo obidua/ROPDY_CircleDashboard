@@ -287,6 +287,140 @@ const ActivateServers = () => {
     }
   };
 
+  const handleAddPortfolio = async (server) => {
+    if (!isConnected || address !== userAddress) {
+      Swal.fire({
+        title: 'Wallet not connected',
+        text: 'Please connect your wallet to add portfolios.',
+        icon: 'warning',
+        confirmButtonColor: '#f59e0b',
+      });
+      return;
+    }
+
+    const { value: formValues } = await Swal.fire({
+      title: `Add Portfolio to Server ${server.id}`,
+      html: `
+        <div class="text-left">
+          <div class="mb-4 p-3 bg-gray-100 rounded">
+            <p><strong>Server ${server.id} Configuration:</strong></p>
+            <p>Min Stake: $1.00 (for additional portfolios)</p>
+            <p>2X Horizon: ${server.days2x} days @ ${(server.dailyBp2x / 100).toFixed(3)}% daily</p>
+            <p>3X Horizon: ${server.days3x} days @ ${(server.dailyBp3x / 100).toFixed(3)}% daily</p>
+          </div>
+          <label class="block text-sm font-medium mb-2">Principal Amount (USD)</label>
+          <input id="swal-input1" class="swal2-input" placeholder="Enter USD amount" type="number" min="1" step="0.01">
+          <label class="block text-sm font-medium mb-2 mt-4">Select Horizon</label>
+          <select id="swal-input2" class="swal2-input">
+            <option value="false">2X Horizon (${server.days2x} days @ ${(server.dailyBp2x / 100).toFixed(3)}% daily)</option>
+            <option value="true">3X Horizon (${server.days3x} days @ ${(server.dailyBp3x / 100).toFixed(3)}% daily)</option>
+          </select>
+          <div class="mt-4 p-3 bg-green-50 rounded text-sm">
+            <p><strong>Note:</strong> Additional portfolios on activated servers have a minimum stake of $1.00.</p>
+          </div>
+        </div>
+      `,
+      focusConfirm: false,
+      preConfirm: () => {
+        const principalUsd = document.getElementById('swal-input1').value;
+        const horizonThreeX = document.getElementById('swal-input2').value;
+        
+        if (!principalUsd || parseFloat(principalUsd) < 1) {
+          Swal.showValidationMessage('Minimum stake for additional portfolios is $1.00');
+          return false;
+        }
+        
+        return [parseFloat(principalUsd), horizonThreeX === 'true'];
+      }
+    });
+
+    if (formValues) {
+      const [principalUsd, selectedHorizon] = formValues;
+      
+      setActivatingServer(server.id);
+      
+      // Simulate portfolio creation with delay
+      setTimeout(() => {
+        try {
+          // Calculate new portfolio details
+          const principalUsdWei = principalUsd * 1e6; // Convert to contract units
+          const capUsdWei = principalUsdWei * (selectedHorizon ? 3 : 2); // 2x or 3x cap
+          const dailyRoiBp = selectedHorizon ? server.dailyBp3x : server.dailyBp2x;
+          const totalDays = selectedHorizon ? server.days3x : server.days2x;
+          
+          // Find next slot ID for this server
+          const existingSlots = userMintStats?.positions?.filter(p => p.serverId === server.id) || [];
+          const nextSlotId = existingSlots.length + 1;
+          
+          // Create new portfolio
+          const newPortfolio = {
+            serverId: server.id,
+            slotId: nextSlotId,
+            horizon: selectedHorizon ? '1' : '0', // 3X : 2X
+            principalUsd: principalUsdWei,
+            capUsd: capUsdWei,
+            dailyRoiBp: dailyRoiBp,
+            claimedDays: 0,
+            totalDays: totalDays,
+            active: true,
+            startTime: Math.floor(Date.now() / 1000),
+            claimedUsd: 0
+          };
+          
+          // Update server data (increment slot count)
+          setServerData(prev => ({
+            ...prev,
+            servers: prev.servers.map(s => 
+              s.id === server.id 
+                ? { ...s, userSlots: (s.userSlots || 0) + 1 }
+                : s
+            ),
+            userCapRemaining: prev.userCapRemaining - capUsdWei
+          }));
+          
+          // Update user mint stats
+          setUserMintStats(prev => ({
+            ...prev,
+            positions: [...(prev?.positions || []), newPortfolio],
+            selfBusinessUsd: (prev?.selfBusinessUsd || 0) + principalUsdWei,
+            userCapRemainingUsd: (prev?.userCapRemainingUsd || 0) - capUsdWei
+          }));
+          
+          // Show success message
+          Swal.fire({
+            title: '✅ Portfolio Added Successfully',
+            html: `
+              <div class="text-left">
+                <p><strong>New Portfolio Created on Server ${server.id}!</strong></p>
+                <ul class="mt-2 space-y-1">
+                  <li><strong>Slot:</strong> #${nextSlotId}</li>
+                  <li><strong>Principal:</strong> $${formatUSD(principalUsdWei)}</li>
+                  <li><strong>Horizon:</strong> ${selectedHorizon ? '3X' : '2X'} (${totalDays} days)</li>
+                  <li><strong>Daily ROI:</strong> ${(dailyRoiBp / 100).toFixed(3)}%</li>
+                  <li><strong>Cap:</strong> $${formatUSD(capUsdWei)}</li>
+                </ul>
+                <p class="mt-3 text-sm text-gray-600">Your new portfolio is now active and earning daily ROI!</p>
+              </div>
+            `,
+            icon: 'success',
+            confirmButtonText: 'Continue',
+            confirmButtonColor: '#22c55e',
+          });
+          
+        } catch (error) {
+          console.error('Portfolio creation error:', error);
+          Swal.fire({
+            title: 'Portfolio Creation Failed',
+            text: 'Something went wrong while creating your portfolio.',
+            icon: 'error',
+            confirmButtonColor: '#ef4444',
+          });
+        } finally {
+          setActivatingServer(null);
+        }
+      }, 1500); // 1.5 second delay to simulate processing
+    }
+  };
   if (loading) {
     return (
       <div className="relative min-h-screen">
@@ -347,6 +481,7 @@ const ActivateServers = () => {
                 activatingServer={activatingServer}
                 handleActivateServer={handleActivateServer}
                 highestActivatedServer={serverData.highestActivated || 0}
+                onAddPortfolio={handleAddPortfolio}
               />
             ))}
           </div>

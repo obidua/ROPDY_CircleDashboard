@@ -7,7 +7,8 @@ const ServerCard = ({
   isConnected, 
   activatingServer, 
   handleActivateServer, 
-  highestActivatedServer 
+  highestActivatedServer,
+  onAddPortfolio
 }) => {
   const { address } = useAppKitAccount();
 
@@ -126,10 +127,7 @@ const ServerCard = ({
         {isActive ? (
           <button
             className="w-full bg-admin-new-green text-white px-4 py-2 rounded-lg font-semibold hover:bg-admin-new-green/80 transition-colors"
-            onClick={() => {
-              // Navigate to portfolios page or show add portfolio modal
-              window.location.href = '/mint/portfolios';
-            }}
+            onClick={() => onAddPortfolio && onAddPortfolio(server)}
           >
             + Add Portfolio
           </button>
