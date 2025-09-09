@@ -25,6 +25,9 @@ const ActivateServers = () => {
       try {
         if (userAddress) {
           const data = await getServerActivationData(userAddress);
+          console.log('Server activation data received:', data);
+          console.log('Servers array:', data?.servers);
+          console.log('Servers length:', data?.servers?.length);
           setServerData(data);
         }
       } catch (error) {
@@ -215,6 +218,22 @@ const ActivateServers = () => {
           <div className="bg-white/50 dark:bg-gray-900/30 backdrop-blur-sm rounded-lg p-4 sm:p-6 border border-admin-new-green/30">
             <h2 className="text-xl font-semibold text-admin-cyan dark:text-admin-cyan-dark mb-6">Server Configurations</h2>
             
+            {!serverData?.servers || serverData.servers.length === 0 ? (
+              <div className="text-center py-8">
+                <div className="text-4xl mb-4">🚀</div>
+                <h3 className="text-lg font-semibold text-gray-700 dark:text-gray-300 mb-2">No Server Configurations Found</h3>
+                <p className="text-gray-600 dark:text-gray-400 mb-4">
+                  {!serverData ? 'Loading server data...' : 'No servers are available for activation at this time.'}
+                </p>
+                {serverData && (
+                  <div className="text-sm text-gray-500 dark:text-gray-400">
+                    <p>Debug Info:</p>
+                    <p>Server data exists: {serverData ? 'Yes' : 'No'}</p>
+                    <p>Servers array: {serverData?.servers ? `Array with ${serverData.servers.length} items` : 'Not found'}</p>
+                  </div>
+                )}
+              </div>
+            ) : (
             <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
               {serverData?.servers?.map((server) => (
                 <div 
@@ -315,6 +334,7 @@ const ActivateServers = () => {
                 </div>
               ))}
             </div>
+            )}
           </div>
         </section>
       </div>
