@@ -122,52 +122,18 @@ const Sidebar = ({ isMobileMenuOpen, setIsMobileMenuOpen }) => {
     {
       title: "Circle Program",
       items: [
-        { label: "Dashboard", icon: "📊", path: "/overview/dashboard" },
-        { label: "Quick Actions", icon: "⚡", path: "/overview/quick-actions" },
-        { label: "Announcements", icon: "📢", path: "/overview/announcements" },
-      ]
-    },
-    {
-      title: "My Mint",
-      items: [
-        { label: "Mint Dashboard", icon: "🏭", path: "/mint/dashboard" },
-        { label: "Activate Servers", icon: "🚀", path: "/mint/activate-servers" },
-        { label: "Portfolios (All Slots)", icon: "💼", path: "/mint/portfolios" },
-        { label: "Claims & History", icon: "📋", path: "/mint/claims-history" },
-        { label: "Top-up", icon: "⬆️", path: "/mint/top-up" },
-        { label: "My Circles", icon: "🔄", path: "/mint/circles" },
-      ]
-    },
-    {
-      title: "Passive Income",
-      items: [
-        { label: "Spot Commission", icon: "💰", path: "/passive/spot-commission" },
-        { label: "Daily Growth", icon: "📈", path: "/passive/daily-growth" },
-      ]
-    },
-    {
-      title: "Leadership",
-      items: [
-        { label: "My Rank & Progress", icon: "🏆", path: "/leadership/rank-progress" },
-        { label: "GTO Rewards (Claim)", icon: "🎁", path: "/leadership/gto-rewards" },
-        { label: "Qualification Tracker", icon: "📊", path: "/leadership/qualification" },
-      ]
-    },
-    {
-      title: "Circle Program",
-      items: [
-        { label: "Circle Dashboard", icon: "⚡", path: "/dashboard" },
+        { label: "Dashboard", icon: "⚡", path: "/dashboard" },
         { label: "Overview / Tree", icon: "📈", path: "/overview" },
         { label: "My Direct", icon: "👥", path: "/my-direct" },
+        { label: "My Circles", icon: "🔄", path: "/circles" },
+        { label: "Purchase Circle", icon: "🛒", path: "/purchase" },
+        { label: "Settlements", icon: "📥", path: "/settlements" },
+        { label: "Earnings", icon: "💰", path: "/earnings" },
+        { label: "CP1 (Direct Payment)", icon: "🧾", path: "/cp1" },
+        { label: "CP2 (Random Payment)", icon: "🎲", path: "/cp2" },
         { label: "Missed Payments", icon: "🚫", path: "/missed" },
         { label: "Profile", icon: "👤", path: "/profile" },
-      ]
-    },
-    {
-      title: "Mint Rewards",
-      items: [
-        { label: "Spot Commission", icon: "💰", path: "/mint/spot-commission" },
-        { label: "GTO Rewards (Claim)", icon: "🎁", path: "/mint/gto-rewards" },
+        { label: "Settings", icon: "⚙️", path: "/settings" },
       ]
     },
     {
