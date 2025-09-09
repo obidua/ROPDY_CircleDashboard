@@ -208,9 +208,9 @@ const MintDashboard = () => {
                 <div className="space-y-2 text-sm">
                   <p><span className="text-gray-600 dark:text-gray-400">Min Stake:</span> ${formatUSD(server.minStakeUsd)}</p>
                   <p><span className="text-gray-600 dark:text-gray-400">2X Days:</span> {server.days2x}</p>
-                  <p><span className="text-gray-600 dark:text-gray-400">2X ROI:</span> {(server.dailyBp2x / 100).toFixed(2)}%</p>
+                  <p><span className="text-gray-600 dark:text-gray-400">2X ROI:</span> {(server.dailyBp2x / 100).toFixed(3)}%</p>
                   <p><span className="text-gray-600 dark:text-gray-400">3X Days:</span> {server.days3x}</p>
-                  <p><span className="text-gray-600 dark:text-gray-400">3X ROI:</span> {(server.dailyBp3x / 100).toFixed(2)}%</p>
+                  <p><span className="text-gray-600 dark:text-gray-400">3X ROI:</span> {(server.dailyBp3x / 100).toFixed(3)}%</p>
                 </div>
               </div>
             ))}
@@ -278,7 +278,7 @@ const MintDashboard = () => {
                       <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">{position.horizon === '0' ? '2X' : '3X'}</td>
                       <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">${formatUSD(position.principalUsd)}</td>
                       <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">${formatUSD(position.capUsd)}</td>
-                      <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">{(position.dailyRoiBp / 100).toFixed(2)}%</td>
+                      <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">{(position.dailyRoiBp / 100).toFixed(3)}%</td>
                       <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">{position.claimedDays}/{position.totalDays}</td>
                       <td className="px-4 py-3 whitespace-nowrap">
                         <span className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${
@@ -303,7 +303,7 @@ const MintDashboard = () => {
               <div key={index} className="bg-white/50 dark:bg-gray-900/30 backdrop-blur-sm p-4 rounded-lg border border-admin-gold-600/30">
                 <h3 className="text-lg font-semibold text-admin-cyan dark:text-admin-cyan-dark mb-2">Tier {index + 1}</h3>
                 <div className="space-y-2 text-sm">
-                  <p><span className="text-gray-600 dark:text-gray-400">Share:</span> {(tier.shareBps / 100).toFixed(2)}%</p>
+                  <p><span className="text-gray-600 dark:text-gray-400">Share:</span> {(tier.shareBps / 100).toFixed(3)}%</p>
                   <p><span className="text-gray-600 dark:text-gray-400">Self Biz:</span> ${formatUSD(tier.selfBiz)}</p>
                   <p><span className="text-gray-600 dark:text-gray-400">Directs:</span> {tier.directs}</p>
                   <p><span className="text-gray-600 dark:text-gray-400">Team Size:</span> {tier.teamSize}</p>
@@ -329,7 +329,7 @@ const MintDashboard = () => {
                 {globalStats?.spotBps?.map((bps, index) => (
                   <div key={index} className="text-center">
                     <div className="font-semibold">L{index + 1}</div>
-                    <div>{(bps / 100).toFixed(1)}%</div>
+                    <div>{(bps / 100).toFixed(3)}%</div>
                   </div>
                 ))}
               </div>
@@ -340,7 +340,7 @@ const MintDashboard = () => {
                 {globalStats?.growthBps?.map((bps, index) => (
                   <div key={index} className="text-center">
                     <div className="font-semibold">L{index + 1}</div>
-                    <div>{(bps / 100).toFixed(1)}%</div>
+                    <div>{(bps / 100).toFixed(3)}%</div>
                   </div>
                 ))}
               </div>
