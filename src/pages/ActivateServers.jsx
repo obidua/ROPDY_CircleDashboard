@@ -234,105 +234,110 @@ const ActivateServers = () => {
                 )}
               </div>
             ) : (
-            <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
-              {serverData?.servers?.map((server) => (
-                <div 
-                  key={server.id} 
-                  className={`border rounded-lg p-6 transition-all duration-300 ${
-                    server.isActivated 
-                      ? 'border-admin-new-green bg-admin-new-green/10' 
-                      : server.canActivate 
-                        ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20 hover:border-blue-400' 
-                        : 'border-gray-300 bg-gray-50 dark:bg-gray-800/50 opacity-60'
-                  }`}
-                >
-                  <div className="flex items-center justify-between mb-4">
-                    <h3 className="text-xl font-bold text-admin-cyan dark:text-admin-cyan-dark">
-                      Server {server.id}
-                    </h3>
-                    <div className="flex items-center gap-2">
-                      {server.isActivated && (
-                        <span className="px-2 py-1 bg-admin-new-green text-white text-xs rounded-full font-semibold">
-                          Active ({server.userSlots} slots)
-                        </span>
-                      )}
-                      {!server.isActivated && server.canActivate && (
-                        <span className="px-2 py-1 bg-blue-500 text-white text-xs rounded-full font-semibold">
-                          Available
-                        </span>
-                      )}
-                      {!server.canActivate && (
-                        <span className="px-2 py-1 bg-gray-400 text-white text-xs rounded-full font-semibold">
-                          Locked
-                        </span>
-                      )}
-                    </div>
-                  </div>
-
-                  <div className="space-y-3 mb-6">
-                    <div className="flex justify-between">
-                      <span className="text-gray-600 dark:text-gray-400">Min Stake:</span>
-                      <span className="font-semibold">${formatUSD(server.minStakeUsd)}</span>
-                    </div>
-                    
-                    <div className="bg-white/50 dark:bg-gray-800/50 rounded-lg p-3">
-                      <div className="text-sm font-semibold text-blue-600 dark:text-blue-400 mb-2">2X Horizon</div>
-                      <div className="flex justify-between text-sm">
-                        <span>Duration:</span>
-                        <span>{server.days2x} days</span>
-                      </div>
-                      <div className="flex justify-between text-sm">
-                        <span>Daily ROI:</span>
-                        <span className="font-semibold text-admin-new-green">{(server.dailyBp2x / 100).toFixed(2)}%</span>
-                      </div>
-                    </div>
-
-                    <div className="bg-white/50 dark:bg-gray-800/50 rounded-lg p-3">
-                      <div className="text-sm font-semibold text-purple-600 dark:text-purple-400 mb-2">3X Horizon</div>
-                      <div className="flex justify-between text-sm">
-                        <span>Duration:</span>
-                        <span>{server.days3x} days</span>
-                      </div>
-                      <div className="flex justify-between text-sm">
-                        <span>Daily ROI:</span>
-                        <span className="font-semibold text-admin-new-green">{(server.dailyBp3x / 100).toFixed(2)}%</span>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="space-y-2">
-                    {server.isActivated ? (
-                      <button
-                        disabled
-                        className="w-full bg-gray-400 text-white px-4 py-3 rounded-lg font-semibold cursor-not-allowed"
-                      >
-                        ✅ Server Activated
-                      </button>
-                    ) : server.canActivate ? (
-                      <button
-                        onClick={() => handleActivateServer(server.id)}
-                        disabled={activatingServer === server.id}
-                        className="w-full bg-blue-600 text-white px-4 py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors disabled:opacity-50"
-                      >
-                        {activatingServer === server.id ? 'Activating...' : `🚀 Activate Server ${server.id}`}
-                      </button>
-                    ) : (
-                      <button
-                        disabled
-                        className="w-full bg-gray-400 text-white px-4 py-3 rounded-lg font-semibold cursor-not-allowed"
-                      >
-                        🔒 Activate Previous Servers First
-                      </button>
-                    )}
-                    
-                    {server.canActivate && !server.isActivated && (
-                      <p className="text-xs text-gray-500 dark:text-gray-400 text-center">
-                        You can create multiple slots on this server
-                      </p>
-                    )}
-                  </div>
-                </div>
-              ))}
+            <div className="overflow-x-auto">
+              <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                <thead className="bg-white/70 dark:bg-gray-800/50">
+                  <tr>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 dark:text-gray-300 uppercase tracking-wider">
+                      Server
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 dark:text-gray-300 uppercase tracking-wider">
+                      Min Stake
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 dark:text-gray-300 uppercase tracking-wider">
+                      2x Horizon (days)
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 dark:text-gray-300 uppercase tracking-wider">
+                      2x Daily ROI %
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 dark:text-gray-300 uppercase tracking-wider">
+                      3x Horizon (days)
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 dark:text-gray-300 uppercase tracking-wider">
+                      3x Daily ROI %
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 dark:text-gray-300 uppercase tracking-wider">
+                      Status
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 dark:text-gray-300 uppercase tracking-wider">
+                      Action
+                    </th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
+                  {serverData?.servers?.map((server) => (
+                    <tr 
+                      key={server.id} 
+                      className={`hover:bg-gray-100/50 dark:hover:bg-gray-800/30 transition-colors ${
+                        server.isActivated 
+                          ? 'bg-admin-new-green/10' 
+                          : server.canActivate 
+                            ? 'bg-blue-50/50 dark:bg-blue-900/10' 
+                            : 'bg-gray-50/50 dark:bg-gray-800/20 opacity-60'
+                      }`}
+                    >
+                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-gray-100">
+                        Server {server.id}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">
+                        ${formatUSD(server.minStakeUsd)}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">
+                        {server.days2x}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm font-semibold text-blue-600 dark:text-blue-400">
+                        {(server.dailyBp2x / 100).toFixed(2)}%
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">
+                        {server.days3x}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm font-semibold text-purple-600 dark:text-purple-400">
+                        {(server.dailyBp3x / 100).toFixed(2)}%
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        {server.isActivated ? (
+                          <span className="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-admin-new-green/20 text-admin-new-green">
+                            Active ({server.userSlots} slots)
+                          </span>
+                        ) : server.canActivate ? (
+                          <span className="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">
+                            Available
+                          </span>
+                        ) : (
+                          <span className="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-gray-100 text-gray-800">
+                            Locked
+                          </span>
+                        )}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm">
+                        {server.isActivated ? (
+                          <button
+                            disabled
+                            className="bg-gray-400 text-white px-4 py-2 rounded-lg font-semibold cursor-not-allowed text-xs"
+                          >
+                            ✅ Activated
+                          </button>
+                        ) : server.canActivate ? (
+                          <button
+                            onClick={() => handleActivateServer(server.id)}
+                            disabled={activatingServer === server.id}
+                            className="bg-blue-600 text-white px-4 py-2 rounded-lg font-semibold hover:bg-blue-700 transition-colors disabled:opacity-50 text-xs"
+                          >
+                            {activatingServer === server.id ? 'Activating...' : '🚀 Activate'}
+                          </button>
+                        ) : (
+                          <button
+                            disabled
+                            className="bg-gray-400 text-white px-4 py-2 rounded-lg font-semibold cursor-not-allowed text-xs"
+                          >
+                            🔒 Locked
+                          </button>
+                        )}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
             </div>
             )}
           </div>
