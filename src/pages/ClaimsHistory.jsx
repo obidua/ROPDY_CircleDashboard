@@ -214,11 +214,11 @@ const ClaimsHistory = () => {
     <div className="relative min-h-screen">
       <BlockchainAnimation />
       <div className="relative p-4 sm:p-6 lg:p-8">
-        <h1 style={{ "color": "#FFD700" }} className="text-2xl font-bold mb-6">📋 Claims & History</h1>
+        <h1 style={{ color: "#FFD700" }} className="text-2xl font-bold mb-6">📋 Claims & History</h1>
 
         {/* Summary Tickers */}
         <section className="mb-8">
-          <h2 style={{ "color": "#FFD700" }} className="text-xl font-semibold mb-4">Claims Summary</h2>
+          <h2 style={{ color: "#FFD700" }} className="text-xl font-semibold mb-4">Claims Summary</h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 sm:gap-6">
             <StatCard 
               label="Today's Claims (USD)" 

@@ -62,7 +62,7 @@ const Dashboard = () => {
     <div className="relative min-h-screen">
       <BlockchainAnimation />
       <div className="relative p-4 sm:p-6 lg:p-8">
-        <h1 style={{ "color": "#FFD700" }} className="text-xl font-semibold text-admin-cyan dark:text-admin-cyan-dark mb-4">Global Stats</h1>
+        <h1 style={{ color: "#FFD700" }} className="text-xl font-semibold text-admin-cyan dark:text-admin-cyan-dark mb-4">Global Stats</h1>
         <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 mb-8 sm:mb-10">
 
         
@@ -75,7 +75,7 @@ const Dashboard = () => {
         </section>
 
         <section className="mb-8 sm:mb-10">
-          <h2 style={{ "color": "#FFD700" }} className="text-xl font-semibold text-admin-cyan dark:text-admin-cyan-dark mb-4">User Information</h2>
+          <h2 style={{ color: "#FFD700" }} className="text-xl font-semibold text-admin-cyan dark:text-admin-cyan-dark mb-4">User Information</h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
             <StatCard label="🆔 User ID" value={dashData?.userId.toString() || 'N/A'} />
             <div className="bg-white/50 dark:bg-gray-900/30 backdrop-blur-sm p-5 rounded-lg shadow-lg border border-admin-new-green/30 hover:border-admin-new-green hover:shadow-xl hover:shadow-admin-new-green/20 transition-all duration-300">
@@ -98,7 +98,7 @@ const Dashboard = () => {
         </section>
 
         <section className="mb-8 sm:mb-10">
-          <h2 style={{ "color": "#FFD700" }} className="text-xl font-semibold text-admin-cyan dark:text-admin-cyan-dark mb-4">Circle Activity</h2>
+          <h2 style={{ color: "#FFD700" }} className="text-xl font-semibold text-admin-cyan dark:text-admin-cyan-dark mb-4">Circle Activity</h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
             <StatCard label="🔄 Total Circles Started" value={dashData?.totalCirclesStarted.toString() || 0} />
             <StatCard label="✅ Circles Completed" value={dashData?.circlesCompleted.toString() || 0} />
@@ -108,7 +108,7 @@ const Dashboard = () => {
         </section>
 
         <section>
-          <h2 style={{ "color": "#FFD700" }} className="text-xl font-semibold text-admin-cyan dark:text-admin-cyan-dark mb-4">💰 Earnings Summary (RAMA)</h2>
+          <h2 style={{ color: "#FFD700" }} className="text-xl font-semibold text-admin-cyan dark:text-admin-cyan-dark mb-4">💰 Earnings Summary (RAMA)</h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
             <StatCard label="CP1 Earnings" value={dashData?.cp1Earnings ? (parseFloat(dashData?.cp1Earnings.toString()) / 1e18).toFixed(5) : '0.00000'} />
             <StatCard label="CP2 Earnings" value={dashData?.cp2Earnings ? (parseFloat(dashData?.cp2Earnings.toString()) / 1e18).toFixed(5) : '0.00000'} />

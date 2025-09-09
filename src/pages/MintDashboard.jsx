@@ -173,7 +173,7 @@ const MintDashboard = () => {
       <BlockchainAnimation />
       <div className="relative p-4 sm:p-6 lg:p-8">
         <div className="flex items-center justify-between mb-6">
-          <h1 style={{ "color": "#FFD700" }} className="text-2xl font-bold">🏭 ROPDY Mint Dashboard</h1>
+          <h1 style={{ color: "#FFD700" }} className="text-2xl font-bold">🏭 ROPDY Mint Dashboard</h1>
           <div className="bg-white/50 dark:bg-gray-900/30 backdrop-blur-sm px-4 py-2 rounded-lg border border-admin-new-green/30">
             <span className="text-admin-cyan dark:text-admin-cyan-dark font-semibold">Multi-Portfolio + Leadership GTO</span>
           </div>
@@ -181,7 +181,7 @@ const MintDashboard = () => {
 
         {/* Global Stats Section */}
         <section className="mb-8 sm:mb-10">
-          <h2 style={{ "color": "#FFD700" }} className="text-xl font-semibold text-admin-cyan dark:text-admin-cyan-dark mb-4">Global Mint Stats</h2>
+          <h2 style={{ color: "#FFD700" }} className="text-xl font-semibold text-admin-cyan dark:text-admin-cyan-dark mb-4">Global Mint Stats</h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
             <RamaCard 
               label="Pool RAMA Balance" 
@@ -200,7 +200,7 @@ const MintDashboard = () => {
 
         {/* Server Configurations */}
         <section className="mb-8 sm:mb-10">
-          <h2 style={{ "color": "#FFD700" }} className="text-xl font-semibold text-admin-cyan dark:text-admin-cyan-dark mb-4">Server Configurations</h2>
+          <h2 style={{ color: "#FFD700" }} className="text-xl font-semibold text-admin-cyan dark:text-admin-cyan-dark mb-4">Server Configurations</h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
             {globalStats?.servers?.map((server, index) => (
               <div key={index} className="bg-white/50 dark:bg-gray-900/30 backdrop-blur-sm p-4 rounded-lg border border-admin-new-green/30">
@@ -220,7 +220,7 @@ const MintDashboard = () => {
         {/* User Information */}
         {userAddress && (
           <section className="mb-8 sm:mb-10">
-            <h2 style={{ "color": "#FFD700" }} className="text-xl font-semibold text-admin-cyan dark:text-admin-cyan-dark mb-4">Your Mint Information</h2>
+            <h2 style={{ color: "#FFD700" }} className="text-xl font-semibold text-admin-cyan dark:text-admin-cyan-dark mb-4">Your Mint Information</h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
               <div className="bg-white/50 dark:bg-gray-900/30 backdrop-blur-sm p-5 rounded-lg shadow-lg border border-admin-new-green/30">
                 <h3 className="text-base text-admin-cyan dark:text-admin-cyan-dark">👛 Wallet Address</h3>
@@ -255,7 +255,7 @@ const MintDashboard = () => {
         {/* User Positions */}
         {userAddress && userStats?.positions && userStats.positions.length > 0 && (
           <section className="mb-8 sm:mb-10">
-            <h2 style={{ "color": "#FFD700" }} className="text-xl font-semibold text-admin-cyan dark:text-admin-cyan-dark mb-4">Your Active Positions</h2>
+            <h2 style={{ color: "#FFD700" }} className="text-xl font-semibold text-admin-cyan dark:text-admin-cyan-dark mb-4">Your Active Positions</h2>
             <div className="bg-white/50 dark:bg-gray-900/30 backdrop-blur-sm rounded-lg p-4 sm:p-6 border border-admin-new-green/30 overflow-x-auto">
               <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
                 <thead className="bg-white/70 dark:bg-gray-800/50">
@@ -297,7 +297,7 @@ const MintDashboard = () => {
 
         {/* Leadership Tiers */}
         <section className="mb-8 sm:mb-10">
-          <h2 style={{ "color": "#FFD700" }} className="text-xl font-semibold text-admin-cyan dark:text-admin-cyan-dark mb-4">Leadership Tiers (GTO)</h2>
+          <h2 style={{ color: "#FFD700" }} className="text-xl font-semibold text-admin-cyan dark:text-admin-cyan-dark mb-4">Leadership Tiers (GTO)</h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             {globalStats?.tiers?.map((tier, index) => (
               <div key={index} className="bg-white/50 dark:bg-gray-900/30 backdrop-blur-sm p-4 rounded-lg border border-admin-gold-600/30">
@@ -321,7 +321,7 @@ const MintDashboard = () => {
 
         {/* Commission Structure */}
         <section>
-          <h2 style={{ "color": "#FFD700" }} className="text-xl font-semibold text-admin-cyan dark:text-admin-cyan-dark mb-4">Commission Structure</h2>
+          <h2 style={{ color: "#FFD700" }} className="text-xl font-semibold text-admin-cyan dark:text-admin-cyan-dark mb-4">Commission Structure</h2>
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <div className="bg-white/50 dark:bg-gray-900/30 backdrop-blur-sm p-6 rounded-lg border border-admin-new-green/30">
               <h3 className="text-lg font-semibold text-admin-cyan dark:text-admin-cyan-dark mb-4">Spot Commission (10%)</h3>

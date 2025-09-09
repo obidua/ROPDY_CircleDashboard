@@ -246,11 +246,11 @@ const TopUp = () => {
     <div className="relative min-h-screen">
       <BlockchainAnimation />
       <div className="relative p-4 sm:p-6 lg:p-8">
-        <h1 style={{ "color": "#FFD700" }} className="text-2xl font-bold mb-6">⬆️ Top-up</h1>
+        <h1 style={{ color: "#FFD700" }} className="text-2xl font-bold mb-6">⬆️ Top-up</h1>
 
         {/* Cap Status */}
         <section className="mb-8">
-          <h2 style={{ "color": "#FFD700" }} className="text-xl font-semibold mb-4">Cap Status</h2>
+          <h2 style={{ color: "#FFD700" }} className="text-xl font-semibold mb-4">Cap Status</h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
             <StatCard 
               label="Cap Remaining (USD)" 
