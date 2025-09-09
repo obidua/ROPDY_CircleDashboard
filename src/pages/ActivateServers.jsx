@@ -14,9 +14,9 @@ const staticServerData = {
       id: 1,
       minStakeUsd: 5000000, // $5.00 in contract units (6 decimals)
       days2x: 990,
-      dailyBp2x: 9, // 0.09% in basis points
+      dailyBp2x: 20.2, // 0.202% in basis points (200% ÷ 990 days)
       days3x: 1350,
-      dailyBp3x: 14, // 0.14% in basis points
+      dailyBp3x: 22.2, // 0.222% in basis points (300% ÷ 1350 days)
       isActivated: true,
       canActivate: false,
       userSlots: 0
@@ -25,9 +25,9 @@ const staticServerData = {
       id: 2,
       minStakeUsd: 10000000, // $10.00
       days2x: 900,
-      dailyBp2x: 10, // 0.10%
+      dailyBp2x: 22.2, // 0.222% in basis points (200% ÷ 900 days)
       days3x: 1260,
-      dailyBp3x: 16, // 0.16%
+      dailyBp3x: 23.8, // 0.238% in basis points (300% ÷ 1260 days)
       isActivated: false,
       canActivate: true,
       userSlots: 0
@@ -36,9 +36,9 @@ const staticServerData = {
       id: 3,
       minStakeUsd: 20000000, // $20.00
       days2x: 810,
-      dailyBp2x: 11, // 0.11%
+      dailyBp2x: 24.7, // 0.247% in basis points (200% ÷ 810 days)
       days3x: 1170,
-      dailyBp3x: 17, // 0.17%
+      dailyBp3x: 25.6, // 0.256% in basis points (300% ÷ 1170 days)
       isActivated: false,
       canActivate: false,
       userSlots: 0
@@ -47,9 +47,9 @@ const staticServerData = {
       id: 4,
       minStakeUsd: 40000000, // $40.00
       days2x: 720,
-      dailyBp2x: 12, // 0.12%
+      dailyBp2x: 27.8, // 0.278% in basis points (200% ÷ 720 days)
       days3x: 1080,
-      dailyBp3x: 18, // 0.18%
+      dailyBp3x: 27.8, // 0.278% in basis points (300% ÷ 1080 days)
       isActivated: false,
       canActivate: false,
       userSlots: 0
@@ -57,10 +57,10 @@ const staticServerData = {
     {
       id: 5,
       minStakeUsd: 80000000, // $80.00
-      days2x: 630,
-      dailyBp2x: 13, // 0.13%
-      days3x: 990,
-      dailyBp3x: 19, // 0.19%
+      days2x: 600,
+      dailyBp2x: 33.3, // 0.333% in basis points (200% ÷ 600 days)
+      days3x: 930,
+      dailyBp3x: 32.3, // 0.323% in basis points (300% ÷ 930 days)
       isActivated: false,
       canActivate: false,
       userSlots: 0
@@ -79,7 +79,7 @@ const staticUserMintStats = {
       horizon: '0', // 2X
       principalUsd: 5000000, // $5.00
       capUsd: 15000000, // $15.00
-      dailyRoiBp: 9,
+      dailyRoiBp: 20.2, // 0.202%
       claimedDays: 45,
       totalDays: 990,
       active: true,
@@ -91,7 +91,7 @@ const staticUserMintStats = {
       horizon: '1', // 3X
       principalUsd: 10000000, // $10.00
       capUsd: 30000000, // $30.00
-      dailyRoiBp: 14,
+      dailyRoiBp: 22.2, // 0.222%
       claimedDays: 30,
       totalDays: 1350,
       active: true,
